@@ -80,19 +80,31 @@ app.layout = html.Div([
     dcc.Dropdown(
         r_codes,
         id='region-dropdown',
+        placeholder='REGION',
         searchable=False
     ),
     dcc.Tabs(id="tariff-tabs", children=[
-        dcc.Tab(label='Agile', value='A'),
-        dcc.Tab(label='Tracker', value='T'),
-        dcc.Tab(label='Go', value='G'),
-        dcc.Tab(label='Cosy', value='C'),
-        dcc.Tab(label='Flux', value='F'),
-        dcc.Tab(label='Intelligent', value='I'),
+        dcc.Tab(label='Agile', value='A', id='A', disabled=True),
+        dcc.Tab(label='Tracker', value='T', id='T', disabled=True),
+        dcc.Tab(label='Go', value='G', id='G', disabled=True),
+        dcc.Tab(label='Cosy', value='C', id='C', disabled=True),
+        dcc.Tab(label='Flux', value='F', id='F', disabled=True),
+        dcc.Tab(label='Intelligent', value='I', id='I', disabled=True),
     ]),
+    html.H2(id="intro", hidden=False, children="Welcome. Select a region from the dropdown at the top to get started.", style={'color': colors['text'], 'textAlign' : 'center'}),
     html.Div(id="tab-content")
 ])
 
+# enable the tariff tabs and remove the intro text once a region has been selected
+@app.callback(
+    [Output("A", "disabled"), Output("T", "disabled"), Output("G", "disabled"), Output("C", "disabled"), Output("F", "disabled"), Output("I", "disabled"), Output("intro", "hidden")],
+    Input('region-dropdown', 'value'),
+    prevent_initial_call=True
+)
+def enable_tab(region):
+    return False, False, False, False, False, False, True
+
+# display content for each tab once selected
 @app.callback(Output('tab-content', 'children'),
               Input('tariff-tabs', 'value'))
 def render_content(tab):
@@ -127,6 +139,8 @@ def render_content(tab):
                         dcc.Graph(figure=px.histogram(sql_query("SELECT * FROM ElectricityImport WHERE tariff = 'I' AND region_code = 'M' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
                 ])
 
+
+# standing charge card to update with tariff and region
 @app.callback(
     Output("sc-card", "children"),
     [Input("region-dropdown", "value"), Input("tariff-tabs", "value")]
@@ -134,6 +148,9 @@ def render_content(tab):
 def update_options(region, tariff):
     if not region:
         raise PreventUpdate
+    
+    global tabs_disabled
+    tabs_disabled = False
 
     return sc_card(tariff, region)
 
