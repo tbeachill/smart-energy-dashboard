@@ -8,6 +8,7 @@ import plotly.express as px
 from datetime import date
 from dateutil.relativedelta import relativedelta
 import dash_bootstrap_components as dbc
+import pytz
 
 # regions
 r_codes = [
@@ -41,10 +42,15 @@ engine = create_engine(connection_string)
 def sql_query(query):
     # take in a sql query and return the result as a pandas dataframe
     with engine.connect() as conn:
-        return pd.read_sql_query(text(query), conn)
+        df = pd.read_sql_query(text(query), conn)
+
+    if 'date' in df.columns:
+        df['date']=pd.DatetimeIndex(df['date']).tz_localize('UTC').tz_convert('Europe/London')
+
+    return df
 
 # Initialize the app
-app = Dash(__name__)
+app = Dash(__name__, suppress_callback_exceptions=True)
 
 colors = {
     'background': '#111111',
@@ -53,6 +59,8 @@ colors = {
 
 # date 6 months in the past
 date_6m = date.today() - relativedelta(months=6)
+date_48h = date.today() - relativedelta(hours=48)
+date_24h = date.today() - relativedelta(hours=24)
 
 # standing charge card
 def sc_card(tariff, region):
@@ -110,13 +118,11 @@ def enable_tab(region):
 def render_content(tab):
     if tab == 'A':
         return html.Div([dbc.Card(id='sc-card'),
-                        dash_table.DataTable(data=sql_query("SELECT * FROM StandingCharges").to_dict('records'), page_size=10),
-                        dcc.Graph(figure=px.histogram(sql_query("SELECT * FROM ElectricityImport WHERE tariff = 'A' AND region_code = 'M' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
+                        dcc.Graph(figure=px.bar(sql_query("SELECT * FROM ElectricityImport WHERE tariff = 'A' AND region_code = 'M' AND date > '" + date_24h.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate'))
                 ])
     if tab == 'T':
         return html.Div([dbc.Card(id='sc-card'),
-                        dash_table.DataTable(data=sql_query("SELECT * FROM StandingCharges").to_dict('records'), page_size=10),
-                        dcc.Graph(figure=px.histogram(sql_query("SELECT * FROM ElectricityImport WHERE tariff = 'T' AND region_code = 'M' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
+                        dcc.Graph(figure=px.bar(sql_query("SELECT * FROM ElectricityImport WHERE tariff = 'T' AND region_code = 'M' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate'))
                 ])
     if tab == 'G':
         return html.Div([dbc.Card(id='sc-card'),
