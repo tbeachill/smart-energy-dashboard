@@ -116,35 +116,38 @@ def enable_tab(region):
 
 # display content for each tab once selected
 @app.callback(Output('tab-content', 'children'),
-              Input('tariff-tabs', 'value'))
-def render_content(tab):
+              [Input('tariff-tabs', 'value'), Input("region-dropdown", "value")])
+def render_content(tab, region):
     if tab == 'A':
         return html.Div([dbc.Card(id='sc-card'),
-                        dcc.Graph(figure=px.bar(sql_query("SELECT * FROM ElectricityImport WHERE tariff = 'A' AND region_code = 'M' AND date > '" + date_24h.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate'))
+                        dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'A' AND region_code = '{region}' AND date > '" + date_24h.strftime("%Y-%m-%d") + "'").to_dict('records'),
+                                                x='date', y='unit_rate')),
+                        dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'A' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'),
+                                                      x='unit_rate'))
                 ])
     if tab == 'T':
         return html.Div([dbc.Card(id='sc-card'),
-                        dcc.Graph(figure=px.bar(sql_query("SELECT * FROM ElectricityImport WHERE tariff = 'T' AND region_code = 'M' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'", True).to_dict('records'), x='date', y='unit_rate'))
+                        dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'T' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'", True).to_dict('records'), x='date', y='unit_rate'))
                 ])
     if tab == 'G':
         return html.Div([dbc.Card(id='sc-card'),
                         dash_table.DataTable(data=sql_query("SELECT * FROM StandingCharges").to_dict('records'), page_size=10),
-                        dcc.Graph(figure=px.histogram(sql_query("SELECT * FROM ElectricityImport WHERE tariff = 'G' AND region_code = 'M' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
+                        dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'G' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
                 ])
     if tab == 'C':
         return html.Div([dbc.Card(id='sc-card'),
                         dash_table.DataTable(data=sql_query("SELECT * FROM StandingCharges").to_dict('records'), page_size=10),
-                        dcc.Graph(figure=px.histogram(sql_query("SELECT * FROM ElectricityImport WHERE tariff = 'C' AND region_code = 'M' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
+                        dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'C' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
                 ])
     if tab == 'F':
         return html.Div([dbc.Card(id='sc-card'),
                         dash_table.DataTable(data=sql_query("SELECT * FROM StandingCharges").to_dict('records'), page_size=10),
-                        dcc.Graph(figure=px.histogram(sql_query("SELECT * FROM ElectricityImport WHERE tariff = 'F' AND region_code = 'M' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
+                        dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'F' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
                 ])
     if tab == 'I':
         return html.Div([dbc.Card(id='sc-card'),
                         dash_table.DataTable(data=sql_query("SELECT * FROM StandingCharges").to_dict('records'), page_size=10),
-                        dcc.Graph(figure=px.histogram(sql_query("SELECT * FROM ElectricityImport WHERE tariff = 'I' AND region_code = 'M' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
+                        dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'I' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
                 ])
 
 
