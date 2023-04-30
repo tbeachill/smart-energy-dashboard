@@ -39,13 +39,15 @@ odbc_params = f'DRIVER={driver};SERVER=tcp:{server};PORT=1433;DATABASE={database
 connection_string = f'mssql+pyodbc:///?odbc_connect={odbc_params}'
 engine = create_engine(connection_string)
 
-def sql_query(query):
+def sql_query(query, no_time=False):
     # take in a sql query and return the result as a pandas dataframe
     with engine.connect() as conn:
-        df = pd.read_sql_query(text(query), conn)
+        df = pd.read_sql_query(text(query), conn, dtype_backend='pyarrow')
 
     if 'date' in df.columns:
-        df['date']=pd.DatetimeIndex(df['date']).tz_localize('UTC').tz_convert('Europe/London')
+        df['date'] = pd.DatetimeIndex(df['date']).tz_localize('UTC').tz_convert('Europe/London')
+    if no_time:
+        df['date'] = df['date'].dt.strftime('%d/%m/%Y')
 
     return df
 
@@ -122,7 +124,7 @@ def render_content(tab):
                 ])
     if tab == 'T':
         return html.Div([dbc.Card(id='sc-card'),
-                        dcc.Graph(figure=px.bar(sql_query("SELECT * FROM ElectricityImport WHERE tariff = 'T' AND region_code = 'M' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate'))
+                        dcc.Graph(figure=px.bar(sql_query("SELECT * FROM ElectricityImport WHERE tariff = 'T' AND region_code = 'M' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'", True).to_dict('records'), x='date', y='unit_rate'))
                 ])
     if tab == 'G':
         return html.Div([dbc.Card(id='sc-card'),
