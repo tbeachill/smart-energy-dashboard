@@ -9,6 +9,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 import dash_bootstrap_components as dbc
 import pytz
+import calendar
 
 # regions
 r_codes = [
@@ -60,6 +61,7 @@ colors = {
 }
 
 # date 6 months in the past
+date_today = date.today()
 date_6m = date.today() - relativedelta(months=6)
 date_48h = date.today() - relativedelta(hours=48)
 date_24h = date.today() - relativedelta(hours=24)
@@ -122,8 +124,17 @@ def render_content(tab, region):
         return html.Div([dbc.Card(id='sc-card'),
                         dcc.RadioItems(['Import', 'Export'], 'Import', id='impex', inline=True),
                         html.Div(id='im-ex'),
-                        dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'A' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'),
-                                                      x='unit_rate'))
+                        dcc.DatePickerRange(
+                            id='agile-datepicker',
+                            display_format='DD/MM/YYYY',
+                            min_date_allowed=date(2022, 12, 1),
+                            max_date_allowed=date(date_today.year, date_today.month, date_today.day),
+                            initial_visible_month=date(date_today.year, date_today.month - 1, 1),
+                            start_date=date(date_today.year, date_today.month - 1, 1),
+                            end_date=date(date_today.year, date_today.month - 1, calendar.monthrange(date_today.year, date_today.month - 1)[1])
+                        ),
+                        html.Div(id='agile-dist'),
+                        
                 ])
     if tab == 'T':
         return html.Div([dbc.Card(id='sc-card'),
@@ -165,6 +176,7 @@ def update_options(region, tariff):
 
     return sc_card(tariff, region)
 
+# return import or export graph based on selection
 @app.callback(
     Output("im-ex", "children"),
     [Input("impex", "value"), Input("region-dropdown", "value")]
@@ -176,6 +188,18 @@ def change_impex(value, region):
     else:
         return dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM ElectricityExport WHERE tariff = 'A' AND region_code = '{region}' AND date > '" + date_24h.strftime("%Y-%m-%d") + "'").to_dict('records'),
                                                 x='date', y='unit_rate'))
+    
+@app.callback(
+    Output("agile-dist", "children"),
+    [Input("impex", "value"), Input("region-dropdown", "value"), Input("agile-datepicker", "start_date"), Input("agile-datepicker", "end_date")]
+)
+def change_distribution(impex, region, start_date, end_date):
+    if impex == "Import":
+        return dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'A' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'").to_dict('records'),
+                                                      x='unit_rate'))
+    else:
+        return dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityExport WHERE tariff = 'A' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'").to_dict('records'),
+                                                      x='unit_rate'))
 
 # Run the app
 if __name__ == '__main__':
