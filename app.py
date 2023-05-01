@@ -120,8 +120,8 @@ def enable_tab(region):
 def render_content(tab, region):
     if tab == 'A':
         return html.Div([dbc.Card(id='sc-card'),
-                        dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'A' AND region_code = '{region}' AND date > '" + date_24h.strftime("%Y-%m-%d") + "'").to_dict('records'),
-                                                x='date', y='unit_rate')),
+                        dcc.RadioItems(['Import', 'Export'], 'Import', id='impex', inline=True),
+                        html.Div(id='im-ex'),
                         dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'A' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'),
                                                       x='unit_rate'))
                 ])
@@ -164,6 +164,18 @@ def update_options(region, tariff):
     tabs_disabled = False
 
     return sc_card(tariff, region)
+
+@app.callback(
+    Output("im-ex", "children"),
+    [Input("impex", "value"), Input("region-dropdown", "value")]
+)
+def change_impex(value, region):
+    if value == "Import":
+        return dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'A' AND region_code = '{region}' AND date > '" + date_24h.strftime("%Y-%m-%d") + "'").to_dict('records'),
+                                                x='date', y='unit_rate'))
+    else:
+        return dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM ElectricityExport WHERE tariff = 'A' AND region_code = '{region}' AND date > '" + date_24h.strftime("%Y-%m-%d") + "'").to_dict('records'),
+                                                x='date', y='unit_rate'))
 
 # Run the app
 if __name__ == '__main__':
