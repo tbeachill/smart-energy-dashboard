@@ -135,7 +135,7 @@ def enable_tab(region):
 @app.callback(Output('card-row', 'children'),
               [Input('tariff-tabs', 'value'), Input("region-dropdown", "value")])
 def render_cards(tab, region):
-    if tab == 'A' or tab == 'T':    
+    if tab != 'C':    
         return html.Div([html.Div([dbc.Card(id='sc-card')],style={'width': '32%', 'display': 'inline-block'}), html.Div([dbc.Card(id='current-price-1')],style={'width': '32%', 'display': 'inline-block'}), html.Div([dbc.Card(id='current-price-2')],style={'width': '32%', 'display': 'inline-block'})])
     else:
         return html.Div([html.Div([dbc.Card(id='sc-card')],style={'width': '32%', 'display': 'inline-block'}), html.Div([dbc.Card(id='current-price-1')],style={'width': '32%', 'display': 'inline-block'})])
@@ -312,27 +312,56 @@ def current_price_card(region, tariff):
     [Input("region-dropdown", "value"), Input("tariff-tabs", "value")]
 )
 def current_price_card(region, tariff):
-    if tariff == "T":
-        title_2 = "Current Gas Cost"
-        table = "GasImport"
-        date_query = f"= '{date_today}'"
-    if tariff == "A":
-        title_2 = "Current Export"
-        table = "ElectricityExport"
-        date_query = f"= '{date_now.astimezone(tz_utc) - relativedelta(minutes=(date_now.minute % 30), seconds=date_now.second, microseconds=date_now.microsecond)}'"
+    match tariff:
+        case "T":
+            title_2 = "Current Gas Cost"
+            table = "GasImport"
+            date_query = f"= '{date_today}'"
+        case "A":
+            title_2 = "Current Export"
+            table = "ElectricityExport"
+            date_query = f"= '{date_now.astimezone(tz_utc) - relativedelta(minutes=(date_now.minute % 30), seconds=date_now.second, microseconds=date_now.microsecond)}'"
+        case "F":
+            title_2 = "Current Export"
+            table = "ElectricityExport"
+            times = [datetime.strptime('01:00', "%H:%M").time(), datetime.strptime('04:00', "%H:%M").time(), datetime.strptime('15:00', "%H:%M").time(), datetime.strptime('18:00', "%H:%M").time()]
+            if date_now.time() < times[0]:
+                date_query = "= '" + date_yday.strftime("%Y-%m-%d") + " 18:00'"
+            elif date_now.time() < times[1]:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 01:00'"
+            elif date_now.time() < times[2]:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 04:00'"
+            elif date_now.time() < times[3]:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 15:00'"
+            else:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 18:00'"
 
-    card_2 = dbc.Card(
-        dbc.CardBody(
-            [
-                html.H3(title_2, className="card-title"),
-                html.H2(str(sql_query(f"SELECT unit_rate FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND date {date_query}")['unit_rate'][0]) + "p", className="card-subtitle"),
-            ]
-        ),
-        style={"width": "10rem",
-            'textAlign': 'center',
-                'color': colors['text']},
-        className="w-75 mb-3",
-    )
+    if tariff == "G" or tariff == "I":
+        card_2 = dbc.Card(
+            dbc.CardBody(
+                [
+                    html.H3("Fixed SEG Export", className="card-title"),
+                    html.H2("4.1p", className="card-subtitle"),
+                ]
+            ),
+            style={"width": "10rem",
+                'textAlign': 'center',
+                    'color': colors['text']},
+            className="w-75 mb-3",
+        )
+    else:
+        card_2 = dbc.Card(
+            dbc.CardBody(
+                [
+                    html.H3(title_2, className="card-title"),
+                    html.H2(str(sql_query(f"SELECT unit_rate FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND date {date_query}")['unit_rate'][0]) + "p", className="card-subtitle"),
+                ]
+            ),
+            style={"width": "10rem",
+                'textAlign': 'center',
+                    'color': colors['text']},
+            className="w-75 mb-3",
+        )
 
     return card_2
 
