@@ -10,6 +10,7 @@ from dateutil.relativedelta import relativedelta
 import dash_bootstrap_components as dbc
 import pytz
 import calendar
+import matplotlib
 
 # regions
 r_codes = [
@@ -40,13 +41,21 @@ odbc_params = f'DRIVER={driver};SERVER=tcp:{server};PORT=1433;DATABASE={database
 connection_string = f'mssql+pyodbc:///?odbc_connect={odbc_params}'
 engine = create_engine(connection_string)
 
-def sql_query(query, no_time=False):
+def sql_query(query, no_time=False, t_convert=True):
     # take in a sql query and return the result as a pandas dataframe
     with engine.connect() as conn:
         df = pd.read_sql_query(text(query), conn, dtype_backend='pyarrow')
 
     if 'date' in df.columns:
-        df['date'] = pd.DatetimeIndex(df['date']).tz_localize('UTC').tz_convert('Europe/London')
+        if t_convert:
+            df['date'] = pd.DatetimeIndex(df['date']).tz_localize('UTC').tz_convert('Europe/London')
+        df['legend'] = ''
+        
+        if "tariff = 'T'" in query:
+            df.loc[df['date'] == date_today, 'legend'] = 'current time'
+        else:
+            df.loc[df['date'] == date_now_30m, 'legend'] = 'current time'
+    
     if no_time:
         df['date'] = df['date'].dt.strftime('%d/%m/%Y')
 
@@ -64,7 +73,9 @@ colors = {
 tz_london = pytz.timezone('Europe/London')
 tz_utc = pytz.timezone('UTC')
 date_today = date.today()
+date_yday = date.today() - relativedelta(days=1)
 date_now = datetime.now()
+date_now_30m = date_now.astimezone(tz_utc) - relativedelta(minutes=(date_now.minute % 30), seconds=date_now.second, microseconds=date_now.microsecond)
 date_6m = date.today() - relativedelta(months=6)
 date_48h = date.today() - relativedelta(hours=48)
 date_24h = date.today() - relativedelta(hours=24)
@@ -252,10 +263,10 @@ def current_price_card(region, tariff):
 def change_impex(value, region, tariff):
     if value == "Import":
         return dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date > '" + date_24h.strftime("%Y-%m-%d") + "'").to_dict('records'),
-                                                x='date', y='unit_rate'))
+                                                x='date', y='unit_rate', color='legend'))
     else:
         return dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM ElectricityExport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date > '" + date_24h.strftime("%Y-%m-%d") + "'").to_dict('records'),
-                                                x='date', y='unit_rate'))
+                                                x='date', y='unit_rate', color='legend'))
     
 # return agile distribution graph based on date selection
 @app.callback(
@@ -277,11 +288,11 @@ def change_distribution(impex, region, start_date, end_date, tariff):
 )
 def change_energy(value, region, tariff):
     if value == "Electricity":
-        return dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date > '" + date_14d.strftime("%Y-%m-%d") + "'").to_dict('records'),
-                                                x='date', y='unit_rate'))
+        return dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date > '" + date_14d.strftime("%Y-%m-%d") + "'", t_convert=False).to_dict('records'),
+                                                x='date', y='unit_rate', color='legend'))
     else:
-        return dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM GasImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date > '" + date_14d.strftime("%Y-%m-%d") + "'").to_dict('records'),
-                                                x='date', y='unit_rate'))
+        return dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM GasImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date > '" + date_14d.strftime("%Y-%m-%d") + "'", t_convert=False).to_dict('records'),
+                                                x='date', y='unit_rate', color='legend'))
 
 # return tracker distribution graph based on date selection
 @app.callback(
