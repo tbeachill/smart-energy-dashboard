@@ -135,8 +135,11 @@ def enable_tab(region):
 @app.callback(Output('card-row', 'children'),
               [Input('tariff-tabs', 'value'), Input("region-dropdown", "value")])
 def render_cards(tab, region):
-    return html.Div([html.Div([dbc.Card(id='sc-card')],style={'width': '32%', 'display': 'inline-block'}), html.Div([dbc.Card(id='current-price-1')],style={'width': '32%', 'display': 'inline-block'}), html.Div([dbc.Card(id='current-price-2')],style={'width': '32%', 'display': 'inline-block'})])
-
+    if tab == 'A' or tab == 'T':    
+        return html.Div([html.Div([dbc.Card(id='sc-card')],style={'width': '32%', 'display': 'inline-block'}), html.Div([dbc.Card(id='current-price-1')],style={'width': '32%', 'display': 'inline-block'}), html.Div([dbc.Card(id='current-price-2')],style={'width': '32%', 'display': 'inline-block'})])
+    else:
+        return html.Div([html.Div([dbc.Card(id='sc-card')],style={'width': '32%', 'display': 'inline-block'}), html.Div([dbc.Card(id='current-price-1')],style={'width': '32%', 'display': 'inline-block'})])
+    
 # display content for each tab once selected
 @app.callback(Output('tab-content', 'children'),
               [Input('tariff-tabs', 'value'), Input("region-dropdown", "value")])
@@ -190,22 +193,22 @@ def render_content(tab, region):
                         ])
                 ])
     if tab == 'G':
-        return html.Div([dbc.Card(id='sc-card'),
+        return html.Div([
                         dash_table.DataTable(data=sql_query("SELECT * FROM StandingCharges").to_dict('records'), page_size=10),
                         dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'G' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
                 ])
     if tab == 'C':
-        return html.Div([dbc.Card(id='sc-card'),
+        return html.Div([
                         dash_table.DataTable(data=sql_query("SELECT * FROM StandingCharges").to_dict('records'), page_size=10),
                         dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'C' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
                 ])
     if tab == 'F':
-        return html.Div([dbc.Card(id='sc-card'),
+        return html.Div([
                         dash_table.DataTable(data=sql_query("SELECT * FROM StandingCharges").to_dict('records'), page_size=10),
                         dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'F' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
                 ])
     if tab == 'I':
-        return html.Div([dbc.Card(id='sc-card'),
+        return html.Div([
                         dash_table.DataTable(data=sql_query("SELECT * FROM StandingCharges").to_dict('records'), page_size=10),
                         dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'I' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
                 ])
@@ -227,23 +230,67 @@ def update_options(region, tariff):
 
 # current price card
 @app.callback(
-    [Output("current-price-1", "children"), Output("current-price-2", "children")],
+    Output("current-price-1", "children"),
     [Input("region-dropdown", "value"), Input("tariff-tabs", "value")]
 )
 def current_price_card(region, tariff):
     if not region:
         raise PreventUpdate
-    if tariff == "A":
-        title_1 = "Current Import"
-        title_2 = "Current Export"
-        table = "ElectricityExport"
-        date_query = f"= '{date_now.astimezone(tz_utc) - relativedelta(minutes=(date_now.minute % 30), seconds=date_now.second, microseconds=date_now.microsecond)}'"
-    elif tariff == "T":
-        title_1 = "Current Electricity Cost"
-        title_2 = "Current Gas Cost"
-        table = "GasImport"
-        date_query = f"= '{date_today}'"
-
+    
+    match tariff:
+        case "T":
+            title_1 = "Current Electricity Cost"
+            date_query = f"= '{date_today}'"
+        case "A":
+            title_1 = "Current Import"
+            date_query = f"= '{date_now.astimezone(tz_utc) - relativedelta(minutes=(date_now.minute % 30), seconds=date_now.second, microseconds=date_now.microsecond)}'"
+        case "G":
+            title_1 = "Current Import"
+            times = [datetime.strptime('03:30', "%H:%M").time(), datetime.strptime('23:30', "%H:%M").time()]
+            if date_now.time() < times[0]:
+                date_query = "= '" + date_yday.strftime("%Y-%m-%d") + " 23:30'"
+            elif date_now.time() < times[1]:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 03:30'"
+            else:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 23:30'"
+        case "C": # 3 6 12 15 18
+            title_1 = "Current Import"
+            times = [datetime.strptime('03:00', "%H:%M").time(), datetime.strptime('06:00', "%H:%M").time(), datetime.strptime('12:00', "%H:%M").time(), datetime.strptime('15:00', "%H:%M").time(), datetime.strptime('18:00', "%H:%M").time()]
+            if date_now.time() < times[0]:
+                date_query = "= '" + date_yday.strftime("%Y-%m-%d") + " 18:00'"
+            elif date_now.time() < times[1]:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 03:00'"
+            elif date_now.time() < times[2]:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 06:00'"
+            elif date_now.time() < times[3]:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 12:00'"
+            elif date_now.time() < times[4]:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 15:00'"
+            else:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 18:00'"
+        case "F": # 1 4 15 18
+            title_1 = "Current Import"
+            times = [datetime.strptime('01:00', "%H:%M").time(), datetime.strptime('04:00', "%H:%M").time(), datetime.strptime('15:00', "%H:%M").time(), datetime.strptime('18:00', "%H:%M").time()]
+            if date_now.time() < times[0]:
+                date_query = "= '" + date_yday.strftime("%Y-%m-%d") + " 18:00'"
+            elif date_now.time() < times[1]:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 01:00'"
+            elif date_now.time() < times[2]:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 04:00'"
+            elif date_now.time() < times[3]:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 15:00'"
+            else:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 18:00'"
+        case "I": # 1 4 15 18
+            title_1 = "Current Import"
+            times = [datetime.strptime('04:30', "%H:%M").time(), datetime.strptime('22:30', "%H:%M").time()]
+            if date_now.time() < times[0]:
+                date_query = "= '" + date_yday.strftime("%Y-%m-%d") + " 22:30'"
+            elif date_now.time() < times[1]:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 04:30'"
+            else:
+                date_query = "= '" + date_now.strftime("%Y-%m-%d") + " 22:30'"
+        
     card_1 = dbc.Card(
         dbc.CardBody(
             [
@@ -256,6 +303,23 @@ def current_price_card(region, tariff):
                 'color': colors['text']},
         className="w-75 mb-3",
     )
+
+    return card_1
+
+# card 3
+@app.callback(
+    Output("current-price-2", "children"),
+    [Input("region-dropdown", "value"), Input("tariff-tabs", "value")]
+)
+def current_price_card(region, tariff):
+    if tariff == "T":
+        title_2 = "Current Gas Cost"
+        table = "GasImport"
+        date_query = f"= '{date_today}'"
+    if tariff == "A":
+        title_2 = "Current Export"
+        table = "ElectricityExport"
+        date_query = f"= '{date_now.astimezone(tz_utc) - relativedelta(minutes=(date_now.minute % 30), seconds=date_now.second, microseconds=date_now.microsecond)}'"
 
     card_2 = dbc.Card(
         dbc.CardBody(
@@ -270,7 +334,8 @@ def current_price_card(region, tariff):
         className="w-75 mb-3",
     )
 
-    return [card_1, card_2]
+    return card_2
+
 
 # return import or export graph based on selection
 @app.callback(
