@@ -155,6 +155,7 @@ def render_content(tab, region):
                         ),
                         dcc.Graph(id='im-ex'),
                         dcc.Graph(id='agile-dist'),
+                        dash_table.DataTable(id='table-a-dist'),
                         dash_table.DataTable(id='table-a', hidden_columns=['legend'], style_data_conditional=[
                             {
                                 'if': {
@@ -178,6 +179,7 @@ def render_content(tab, region):
                         ),
                         dcc.Graph(id='gas-elec'),
                         dcc.Graph(id='tracker-dist'),
+                        dash_table.DataTable(id='table-t-dist'),
                         dash_table.DataTable(id='table-t', hidden_columns=['legend'], style_data_conditional=[
                             {
                                 'if': {
@@ -291,20 +293,35 @@ def change_impex(value, region, tariff, start_date, end_date):
     
 # return agile distribution graph based on date selection
 @app.callback(
-    Output("agile-dist", "figure"),
+    [Output("agile-dist", "figure"), Output("table-a-dist", "data")],
     [Input("impex", "value"), Input("region-dropdown", "value"), Input("datepicker1", "start_date"), Input("datepicker1", "end_date"), Input("tariff-tabs", "value")]
 )
 def change_distribution(impex, region, start_date, end_date, tariff):
     if impex == "Import":
         df = sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'")
-        figure=px.histogram(df, x='unit_rate')
 
-        return figure
+        bins=[-100,0,3,5,7,10,15,20,25,30,35,40,50,100]
+        labels=['<0p', '<3p', '<5p', '<7p', '<10p', '<15p', '<20p', '<25p', '<30p', '<35p', '<40p', '<50p', '>50p']
+        groups = df.groupby(pd.cut(df.unit_rate, bins, labels=labels))
+        group_df = pd.DataFrame(groups.unit_rate.count())
+        group_df.columns = ['count']
+        group_df['label'] = labels
+        
+        figure=px.bar(group_df, x='label', y='count')
+
+        return [figure, group_df[['count']].T.to_dict('records')]
     else:
         df = sql_query(f"SELECT * FROM ElectricityExport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'")
-        figure=px.histogram(df, x='unit_rate')
+        bins=[0,3,5,7,10,15,20,25,30,35,40,50,100,1000]
+        labels=['<3p', '<5p', '<7p', '<10p', '<15p', '<20p', '<25p', '<30p', '<35p', '<40p', '<50p', '<100p', '>100p']
+        groups = df.groupby(pd.cut(df.unit_rate, bins, labels=labels))
+        group_df = pd.DataFrame(groups.unit_rate.count())
+        group_df.columns = ['count']
+        group_df['label'] = labels
+        
+        figure=px.bar(group_df, x='label', y='count')
 
-        return figure
+        return [figure, group_df[['count']].T.to_dict('records')]
     
 # return tracker gas or electric graph based on selection
 @app.callback(
@@ -327,20 +344,34 @@ def change_energy(value, region, tariff, start_date, end_date):
 
 # return tracker distribution graph based on date selection
 @app.callback(
-    Output("tracker-dist", "figure"),
+    [Output("tracker-dist", "figure"), Output("table-t-dist", "data")],
     [Input("energy-type", "value"), Input("region-dropdown", "value"), Input("datepicker2", "start_date"), Input("datepicker2", "end_date"), Input("tariff-tabs", "value")]
 )
 def change_distribution(energy_type, region, start_date, end_date, tariff):
     if energy_type == "Electricity":
         df = sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'")
-        figure=px.histogram(df, x='unit_rate')
+        bins=[0,3,5,7,10,15,20,25,30,35,40,50,100]
+        labels=['<3p', '<5p', '<7p', '<10p', '<15p', '<20p', '<25p', '<30p', '<35p', '<40p', '<50p', '>50p']
+        groups = df.groupby(pd.cut(df.unit_rate, bins, labels=labels))
+        group_df = pd.DataFrame(groups.unit_rate.count())
+        group_df.columns = ['count']
+        group_df['label'] = labels
+        
+        figure=px.bar(group_df, x='label', y='count')
 
-        return figure
+        return [figure, group_df[['count']].T.to_dict('records')]
     else:
         df = sql_query(f"SELECT * FROM GasImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'")
-        figure=px.histogram(df, x='unit_rate')
+        bins=[0,2,4,6,8,10,12,14,16,18,20,22,100]
+        labels=['<2p', '<4p', '<6p', '<8p', '<10p', '<12p', '<14p', '<16p', '<18p', '<20p', '<22p', '>22p']
+        groups = df.groupby(pd.cut(df.unit_rate, bins, labels=labels))
+        group_df = pd.DataFrame(groups.unit_rate.count())
+        group_df.columns = ['count']
+        group_df['label'] = labels
+        
+        figure=px.bar(group_df, x='label', y='count')
 
-        return figure
+        return [figure, group_df[['count']].T.to_dict('records')]
 
 # Run the app
 if __name__ == '__main__':
