@@ -144,7 +144,7 @@ def render_content(tab, region):
     if tab == 'A':
         return html.Div([                        
                         dcc.RadioItems(['Import', 'Export'], 'Import', id='impex', inline=True),
-                        html.Div(id='im-ex'),
+                        dcc.Graph(id='im-ex'),
                         dcc.DatePickerRange(
                             id='datepicker',
                             display_format='DD/MM/YYYY',
@@ -154,13 +154,13 @@ def render_content(tab, region):
                             start_date=date(date_today.year, date_today.month - 1, 1),
                             end_date=date(date_today.year, date_today.month - 1, calendar.monthrange(date_today.year, date_today.month - 1)[1])
                         ),
-                        html.Div(id='agile-dist'),
+                        dcc.Graph(id='agile-dist'),
                         
                 ])
     if tab == 'T':
         return html.Div([
                         dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True),
-                        html.Div(id='gas-elec'),
+                        dcc.Graph(id='gas-elec'),
                         dcc.DatePickerRange(
                             id='datepicker',
                             display_format='DD/MM/YYYY',
@@ -170,7 +170,7 @@ def render_content(tab, region):
                             start_date=date(date_today.year, date_today.month - 1, 1),
                             end_date=date(date_today.year, date_today.month - 1, calendar.monthrange(date_today.year, date_today.month - 1)[1])
                         ),
-                        html.Div(id='tracker-dist'),
+                        dcc.Graph(id='tracker-dist'),
                 ])
     if tab == 'G':
         return html.Div([dbc.Card(id='sc-card'),
@@ -257,55 +257,67 @@ def current_price_card(region, tariff):
 
 # return import or export graph based on selection
 @app.callback(
-    Output("im-ex", "children"),
+    Output("im-ex", "figure"),
     [Input("impex", "value"), Input("region-dropdown", "value"), Input("tariff-tabs", "value")]
 )
 def change_impex(value, region, tariff):
     if value == "Import":
-        return dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date > '" + date_24h.strftime("%Y-%m-%d") + "'").to_dict('records'),
-                                                x='date', y='unit_rate', color='legend'))
+        figure=px.bar(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date > '" + date_24h.strftime("%Y-%m-%d") + "'").to_dict('records'),
+                                                x='date', y='unit_rate', color='legend')
+        figure.add_hline(y=sql_query(f"SELECT unit_rate FROM ElectricityImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0])
+        return figure
     else:
-        return dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM ElectricityExport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date > '" + date_24h.strftime("%Y-%m-%d") + "'").to_dict('records'),
-                                                x='date', y='unit_rate', color='legend'))
+        figure=px.bar(sql_query(f"SELECT * FROM ElectricityExport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date > '" + date_24h.strftime("%Y-%m-%d") + "'").to_dict('records'),
+                                                x='date', y='unit_rate', color='legend')
+        figure.add_hline(y=15)
+        return figure
     
 # return agile distribution graph based on date selection
 @app.callback(
-    Output("agile-dist", "children"),
+    Output("agile-dist", "figure"),
     [Input("impex", "value"), Input("region-dropdown", "value"), Input("datepicker", "start_date"), Input("datepicker", "end_date"), Input("tariff-tabs", "value")]
 )
 def change_distribution(impex, region, start_date, end_date, tariff):
     if impex == "Import":
-        return dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'").to_dict('records'),
-                                                      x='unit_rate'))
+        figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'").to_dict('records'),
+                                                      x='unit_rate')
+        return figure
     else:
-        return dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityExport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'").to_dict('records'),
-                                                      x='unit_rate'))
+        figure=px.histogram(sql_query(f"SELECT * FROM ElectricityExport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'").to_dict('records'),
+                                                      x='unit_rate')
+        return figure
     
 # return tracker gas or electric graph based on selection
 @app.callback(
-    Output("gas-elec", "children"),
+    Output("gas-elec", "figure"),
     [Input("energy-type", "value"), Input("region-dropdown", "value"), Input("tariff-tabs", "value")]
 )
 def change_energy(value, region, tariff):
     if value == "Electricity":
-        return dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date > '" + date_14d.strftime("%Y-%m-%d") + "'", t_convert=False).to_dict('records'),
-                                                x='date', y='unit_rate', color='legend'))
+        figure=px.bar(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date > '" + date_14d.strftime("%Y-%m-%d") + "'", t_convert=False).to_dict('records'),
+                                                x='date', y='unit_rate', color='legend')
+        figure.add_hline(y=sql_query(f"SELECT unit_rate FROM ElectricityImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0])
+        return figure
     else:
-        return dcc.Graph(figure=px.bar(sql_query(f"SELECT * FROM GasImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date > '" + date_14d.strftime("%Y-%m-%d") + "'", t_convert=False).to_dict('records'),
-                                                x='date', y='unit_rate', color='legend'))
+        figure=px.bar(sql_query(f"SELECT * FROM GasImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date > '" + date_14d.strftime("%Y-%m-%d") + "'", t_convert=False).to_dict('records'),
+                                                x='date', y='unit_rate', color='legend')
+        figure.add_hline(y=sql_query(f"SELECT unit_rate FROM GasImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0])
+        return figure
 
 # return tracker distribution graph based on date selection
 @app.callback(
-    Output("tracker-dist", "children"),
+    Output("tracker-dist", "figure"),
     [Input("energy-type", "value"), Input("region-dropdown", "value"), Input("datepicker", "start_date"), Input("datepicker", "end_date"), Input("tariff-tabs", "value")]
 )
 def change_distribution(energy_type, region, start_date, end_date, tariff):
     if energy_type == "Electricity":
-        return dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'").to_dict('records'),
-                                                      x='unit_rate'))
+        figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'").to_dict('records'),
+                                                      x='unit_rate')
+        return figure
     else:
-        return dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM GasImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'").to_dict('records'),
-                                                      x='unit_rate'))
+        figure=px.histogram(sql_query(f"SELECT * FROM GasImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'").to_dict('records'),
+                                                      x='unit_rate')
+        return figure
 
 # Run the app
 if __name__ == '__main__':
