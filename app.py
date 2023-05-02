@@ -12,6 +12,7 @@ import pytz
 import calendar
 import matplotlib
 
+
 # regions
 r_codes = [
     {"label": "East England", "value": 'A'},
@@ -74,6 +75,7 @@ tz_london = pytz.timezone('Europe/London')
 tz_utc = pytz.timezone('UTC')
 date_today = date.today()
 date_yday = date.today() - relativedelta(days=1)
+date_tomoz = date.today() + relativedelta(days=1)
 date_now = datetime.now()
 date_now_30m = date_now.astimezone(tz_utc) - relativedelta(minutes=(date_now.minute % 30), seconds=date_now.second, microseconds=date_now.microsecond)
 date_6m = date.today() - relativedelta(months=6)
@@ -152,9 +154,9 @@ def render_content(tab, region):
                             display_format='DD/MM/YYYY',
                             min_date_allowed=date(2022, 12, 1),
                             max_date_allowed=date(date_today.year, date_today.month, date_today.day),
-                            initial_visible_month=date(date_today.year, date_today.month - 1, 1),
+                            initial_visible_month=date(date_today.year, date_today.month, 1),
                             start_date=date_today - relativedelta(days=1),
-                            end_date=date_today + relativedelta(days=1)
+                            end_date=date_today + relativedelta(days=2)
                         ),
                         dcc.Graph(id='im-ex'),
                         dcc.Graph(id='agile-dist'),
@@ -176,9 +178,9 @@ def render_content(tab, region):
                             display_format='DD/MM/YYYY',
                             min_date_allowed=date(2022, 12, 1),
                             max_date_allowed=date(date_today.year, date_today.month, date_today.day),
-                            initial_visible_month=date(date_today.year, date_today.month - 1, 1),
+                            initial_visible_month=date(date_today.year, date_today.month, 1),
                             start_date=date_today - relativedelta(months=1),
-                            end_date=date_today + relativedelta(days=1)
+                            end_date=date_today + relativedelta(days=2)
                         ),
                         dcc.Graph(id='gas-elec'),
                         dcc.Graph(id='tracker-dist'),
@@ -194,23 +196,88 @@ def render_content(tab, region):
                 ])
     if tab == 'G':
         return html.Div([
-                        dash_table.DataTable(data=sql_query("SELECT * FROM StandingCharges").to_dict('records'), page_size=10),
-                        dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'G' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
+                        dcc.DatePickerRange(
+                            id='datepicker3',
+                            display_format='DD/MM/YYYY',
+                            min_date_allowed=date(2022, 12, 1),
+                            max_date_allowed=date(date_today.year, date_today.month, date_today.day),
+                            initial_visible_month=date(date_today.year, date_today.month, 1),
+                            start_date=date_today - relativedelta(days=1),
+                            end_date=date_today + relativedelta(days=2)
+                        ),
+                        dcc.Graph(id='im-ex-g'),
+                        dash_table.DataTable(id='table-g', hidden_columns=['legend'], style_data_conditional=[
+                            {
+                                'if': {
+                                    'filter_query': '{legend} eq "current time"'
+                                },
+                                'backgroundColor': 'green',
+                            },
+                        ])
                 ])
     if tab == 'C':
         return html.Div([
-                        dash_table.DataTable(data=sql_query("SELECT * FROM StandingCharges").to_dict('records'), page_size=10),
-                        dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'C' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
+                        dcc.DatePickerRange(
+                            id='datepicker4',
+                            display_format='DD/MM/YYYY',
+                            min_date_allowed=date(2022, 12, 1),
+                            max_date_allowed=date(date_today.year, date_today.month, date_today.day),
+                            initial_visible_month=date(date_today.year, date_today.month, 1),
+                            start_date=date_today - relativedelta(days=1),
+                            end_date=date_today + relativedelta(days=2)
+                        ),
+                        dcc.Graph(id='im-ex-c'),
+                        dash_table.DataTable(id='table-c', hidden_columns=['legend'], style_data_conditional=[
+                            {
+                                'if': {
+                                    'filter_query': '{legend} eq "current time"'
+                                },
+                                'backgroundColor': 'green',
+                            },
+                        ])
                 ])
     if tab == 'F':
         return html.Div([
-                        dash_table.DataTable(data=sql_query("SELECT * FROM StandingCharges").to_dict('records'), page_size=10),
-                        dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'F' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
+                        dcc.RadioItems(['Import', 'Export'], 'Import', id='impex-2', inline=True),
+                        dcc.DatePickerRange(
+                            id='datepicker5',
+                            display_format='DD/MM/YYYY',
+                            min_date_allowed=date(2022, 12, 1),
+                            max_date_allowed=date(date_today.year, date_today.month, date_today.day),
+                            initial_visible_month=date(date_today.year, date_today.month, 1),
+                            start_date=date_today - relativedelta(days=1),
+                            end_date=date_today + relativedelta(days=2)
+                        ),
+                        dcc.Graph(id='im-ex-f'),
+                        dash_table.DataTable(id='table-f', hidden_columns=['legend'], style_data_conditional=[
+                            {
+                                'if': {
+                                    'filter_query': '{legend} eq "current time"'
+                                },
+                                'backgroundColor': 'green',
+                            },
+                        ])
                 ])
     if tab == 'I':
         return html.Div([
-                        dash_table.DataTable(data=sql_query("SELECT * FROM StandingCharges").to_dict('records'), page_size=10),
-                        dcc.Graph(figure=px.histogram(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = 'I' AND region_code = '{region}' AND date > '" + date_6m.strftime("%Y-%m-%d") + "'").to_dict('records'), x='date', y='unit_rate', histfunc='avg'))
+                        dcc.DatePickerRange(
+                            id='datepicker6',
+                            display_format='DD/MM/YYYY',
+                            min_date_allowed=date(2022, 12, 1),
+                            max_date_allowed=date(date_today.year, date_today.month, date_today.day),
+                            initial_visible_month=date(date_today.year, date_today.month, 1),
+                            start_date=date_today - relativedelta(days=1),
+                            end_date=date_today + relativedelta(days=2)
+                        ),
+                        dcc.Graph(id='im-ex-i'),
+                        dash_table.DataTable(id='table-i', hidden_columns=['legend'], style_data_conditional=[
+                            {
+                                'if': {
+                                    'filter_query': '{legend} eq "current time"'
+                                },
+                                'backgroundColor': 'green',
+                            },
+                        ])
                 ])
 
 
@@ -374,17 +441,80 @@ def current_price_card(region, tariff):
 def change_impex(value, region, tariff, start_date, end_date):
     if value == "Import":
         df = sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'")
-        figure=px.bar(df, x='date', y='unit_rate', color='legend')
+        figure=px.line(df, x='date', y='unit_rate', color='legend', line_shape='hv')
         figure.add_hline(y=sql_query(f"SELECT unit_rate FROM ElectricityImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0])
+        figure.add_vline(date_now)
         
         return [figure, df[['date', 'unit_rate', 'legend']].to_dict('records')]
     else:
         df = sql_query(f"SELECT * FROM ElectricityExport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'")
-        figure=px.bar(df, x='date', y='unit_rate', color='legend')
+        figure=px.line(df, x='date', y='unit_rate', color='legend', line_shape='hv')
         figure.add_hline(y=15)
+        figure.add_vline(date_now)
 
         return [figure, df[['date', 'unit_rate', 'legend']].to_dict('records')]
     
+# return import or export FLUX graph based on selection
+@app.callback(
+    [Output("im-ex-f", "figure"), Output("table-f", "data")],
+    [Input("impex-2", "value"), Input("region-dropdown", "value"), Input("tariff-tabs", "value"), Input("datepicker5", "start_date"), Input("datepicker5", "end_date")]
+)
+def change_impex(value, region, tariff, start_date, end_date):
+    if value == "Import":
+        df = sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'")
+        figure=px.line(df, x='date', y='unit_rate', color='legend', line_shape='hv')
+        figure.add_hline(y=sql_query(f"SELECT unit_rate FROM ElectricityImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0])
+        figure.add_vline(date_now)
+        
+        return [figure, df[['date', 'unit_rate', 'legend']].to_dict('records')]
+    else:
+        df = sql_query(f"SELECT * FROM ElectricityExport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'")
+        figure=px.line(df, x='date', y='unit_rate', color='legend', line_shape='hv')
+        figure.add_hline(y=15)
+        figure.add_vline(date_now)
+
+        return [figure, df[['date', 'unit_rate', 'legend']].to_dict('records')]
+    
+# return go import graph
+@app.callback(
+    [Output("im-ex-g", "figure"), Output("table-g", "data")],
+    [Input("region-dropdown", "value"), Input("tariff-tabs", "value"), Input("datepicker3", "start_date"), Input("datepicker3", "end_date")]
+)
+def change_impex(region, tariff, start_date, end_date):
+    df = sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'")
+    
+    figure=px.line(df, x='date', y='unit_rate', color='legend', line_shape='hv')
+    figure.add_hline(y=sql_query(f"SELECT unit_rate FROM ElectricityImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0])
+    figure.add_vline(date_now)
+    
+    return [figure, df[['date', 'unit_rate', 'legend']].to_dict('records')]
+
+# return cosy import graph
+@app.callback(
+    [Output("im-ex-c", "figure"), Output("table-c", "data")],
+    [Input("region-dropdown", "value"), Input("tariff-tabs", "value"), Input("datepicker4", "start_date"), Input("datepicker4", "end_date")]
+)
+def change_impex(region, tariff, start_date, end_date):
+    df = sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'")
+    figure=px.line(df, x='date', y='unit_rate', color='legend', line_shape='hv')
+    figure.add_hline(y=sql_query(f"SELECT unit_rate FROM ElectricityImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0])
+    figure.add_vline(date_now)
+    
+    return [figure, df[['date', 'unit_rate', 'legend']].to_dict('records')]
+
+# return intelligent import graph
+@app.callback(
+    [Output("im-ex-i", "figure"), Output("table-i", "data")],
+    [Input("region-dropdown", "value"), Input("tariff-tabs", "value"), Input("datepicker6", "start_date"), Input("datepicker6", "end_date")]
+)
+def change_impex(region, tariff, start_date, end_date):
+    df = sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'")
+    figure=px.line(df, x='date', y='unit_rate', color='legend', line_shape='hv')
+    figure.add_hline(y=sql_query(f"SELECT unit_rate FROM ElectricityImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0])
+    figure.add_vline(date_now)
+    
+    return [figure, df[['date', 'unit_rate', 'legend']].to_dict('records')]
+
 # return agile distribution graph based on date selection
 @app.callback(
     [Output("agile-dist", "figure"), Output("table-a-dist", "data")],
@@ -424,15 +554,37 @@ def change_distribution(impex, region, start_date, end_date, tariff):
 )
 def change_energy(value, region, tariff, start_date, end_date):
     if value == "Electricity":
-        df = sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'", t_convert=False)
-        figure=px.bar(df, x='date', y='unit_rate', color='legend')
+        df = pd.DataFrame(sql_query(f"SELECT * FROM ElectricityImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'", t_convert=False))
+        
+        # add an extra point to make todays cost line continue on the graph
+        deet = df.loc[df['date'] == date_yday]['unit_rate'].values[0]
+        row = {'date':date_tomoz, 'tariff':tariff, 'region_code':region, 'unit_rate':deet}
+        new_df = pd.DataFrame([row])
+        df = pd.concat([df, new_df], axis=0, ignore_index=True)
+        
+        figure=px.line(df, x='date', y='unit_rate',  line_shape='hv')
         figure.add_hline(y=sql_query(f"SELECT unit_rate FROM ElectricityImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0])
+        figure.add_vline(date_now)
+
+        # remove the last row that was added earlier
+        df = df[:-1]
 
         return [figure, df[['date', 'unit_rate', 'legend']].to_dict('records')]
     else:
         df = sql_query(f"SELECT * FROM GasImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'", t_convert=False)
-        figure=px.bar(df, x='date', y='unit_rate', color='legend')
+
+        # add an extra point to make todays cost line continue on the graph
+        deet = df.loc[df['date'] == date_yday]['unit_rate'].values[0]
+        row = {'date':date_tomoz, 'tariff':tariff, 'region_code':region, 'unit_rate':deet}
+        new_df = pd.DataFrame([row])
+        df = pd.concat([df, new_df], axis=0, ignore_index=True)
+        
+        figure=px.line(df, x='date', y='unit_rate', color='legend', line_shape='hv')
         figure.add_hline(y=sql_query(f"SELECT unit_rate FROM GasImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0])
+        figure.add_vline(date_now)
+
+        # remove the last row that was added earlier
+        df = df[:-1]
 
         return [figure, df[['date', 'unit_rate', 'legend']].to_dict('records')]
 
