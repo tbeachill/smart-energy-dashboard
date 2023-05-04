@@ -2,9 +2,10 @@ from dash import Dash, html, dcc
 from callbacks import get_callbacks
 from const import *
 from sql_utils import sql_utils as sql
+import dash_bootstrap_components as dbc
 
 # Initialize the app
-app = Dash(__name__, suppress_callback_exceptions=True)
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
 sql.connect()
 get_callbacks(app)
 

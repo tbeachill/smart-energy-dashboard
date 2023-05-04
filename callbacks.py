@@ -6,6 +6,7 @@ from const import *
 from dash.exceptions import PreventUpdate
 from graph_utils import graph_utils as g
 from cards import cards
+from style import *
 
 def get_callbacks(app):
         # enable the tariff tabs and remove the intro text once a region has been selected

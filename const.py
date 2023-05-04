@@ -24,3 +24,5 @@ r_codes = [
 card_style = {"width": "10rem",
                 'textAlign': 'center',
                     'color': colors['text']}
+
+

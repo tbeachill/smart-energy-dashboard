@@ -4,6 +4,7 @@ import pandas as pd
 from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from const import *
+from style import *
 
 class graph_utils():
     def addition(df, tariff, region):
@@ -38,7 +39,7 @@ class graph_utils():
             if datetime.utcnow().time() > datetime.strptime('00:15', "%H:%M").time():
                 df = graph_utils.addition(df, tariff, region)
 
-        figure=px.line(df, x='date', y='unit_rate', line_shape='hv')
+        figure=px.line(df, x='date', y='unit_rate', line_shape='hv', template=template)
         figure.add_hline(y=hline)
         figure.add_vline(datetime.now())
 
@@ -69,6 +70,6 @@ class graph_utils():
         group_df.columns = ['count']
         group_df['label'] = labels
         
-        figure=px.bar(group_df, x='label', y='count')
+        figure=px.bar(group_df, x='label', y='count', color='label', color_discrete_sequence=dist_plot_cmap, template=template)
 
         return [figure, group_df[['count']].T.to_dict('records')]

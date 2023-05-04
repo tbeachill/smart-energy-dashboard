@@ -16,6 +16,7 @@ class cards:
             ),
             style=card_style,
             className="w-75 mb-3",
+            color="secondary", inverse=True, outline=False
         )
 
         return card
