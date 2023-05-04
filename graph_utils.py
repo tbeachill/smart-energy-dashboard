@@ -7,7 +7,7 @@ from const import *
 
 class graph_utils():
     def addition(df, tariff, region):
-        deet = df.loc[df['date'] == date.today()]['unit_rate'].values[0]
+        deet = df.loc[df['legend'] == "current time"]['unit_rate'].values[0]
         row = {'date':date.today() + relativedelta(days=1), 'tariff':tariff, 'region_code':region, 'unit_rate':deet}
         new_df = pd.DataFrame([row])
         df = pd.concat([df, new_df], axis=0, ignore_index=True)
@@ -34,7 +34,7 @@ class graph_utils():
 
         df = sql.query(f"SELECT * FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'", t_convert=t_convert)
 
-        if tariff == "T":
+        if tariff == "T" or tariff == "G":
             if datetime.utcnow().time() > datetime.strptime('00:15', "%H:%M").time():
                 df = graph_utils.addition(df, tariff, region)
 
@@ -42,7 +42,7 @@ class graph_utils():
         figure.add_hline(y=hline)
         figure.add_vline(datetime.now())
 
-        if tariff == "T":
+        if tariff == "T" or tariff == "G":
             df = df[:-1]
         
         return [figure, df[['date', 'unit_rate', 'legend']].to_dict('records')]

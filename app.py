@@ -1,5 +1,4 @@
 from dash import Dash, html, dcc
-import dash_bootstrap_components as dbc
 from callbacks import get_callbacks
 from const import *
 from sql_utils import sql_utils as sql

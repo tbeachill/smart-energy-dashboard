@@ -3,7 +3,7 @@ from sqlalchemy import create_engine, text
 import os
 import pandas as pd
 from dt_utils import dt_utils as dt
-from datetime import date
+import re
 
 class sql_utils:
     def connect():
@@ -25,16 +25,13 @@ class sql_utils:
             df = pd.read_sql_query(text(query), conn, dtype_backend='pyarrow')
 
         if 'date' in df.columns:
+            tariff = re.findall(r"tariff = '.'", query)
+            df.loc[df['date'] == dt.get_period(tariff[0][10]), 'legend'] = 'current time'
+
             if t_convert:
                 df['date'] = pd.DatetimeIndex(df['date']).tz_localize('UTC').tz_convert('Europe/London')
-            df['legend'] = ''
             
-            if "tariff = 'T'" in query:
-                df.loc[df['date'] == date.today(), 'legend'] = 'current time'
-            else:
-                df.loc[df['date'] == dt.period_30m(), 'legend'] = 'current time'
-        
         if no_time:
-            df['date'] = df['date'].dt.strftime('%d/%m/%Y')
+            df['date'] = df['date'].dt.strftime('%d-%m-%Y')
 
         return df
