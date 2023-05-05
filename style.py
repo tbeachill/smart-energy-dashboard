@@ -19,8 +19,6 @@ template = templates[0]
 # CARDS
 card_style = {
     'background': 'red',
-    'align-items': 'center',
-    'justify-content': 'center',
     'text-align': 'center',
     'font-size': '14px',
     'font-weight': 600,
@@ -29,7 +27,7 @@ card_style = {
 card_row_style = {
     'padding':'10px',
     'align-items': 'center',
-    'justify-content': 'center',
+    'justify-content': 'center',  
 }
 
 # TABS
@@ -43,7 +41,7 @@ tab_style = {
     'align-items': 'center',
     'justify-content': 'center',
     'border-radius': '4px',
-    'padding':'6px'
+    'padding':'6px',
 }
 
 selected_tab_style = {

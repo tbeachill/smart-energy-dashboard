@@ -24,7 +24,7 @@ app.layout = html.Div([
     ),
     dcc.Tabs(id='tariff-tabs'),
     html.H2(id="intro", hidden=False, children="Welcome. Select a region from the dropdown at the top to get started.", style={'color': colors['text'], 'textAlign' : 'center'}),
-    html.Div(id='card-row', style=card_row_style),
+    dbc.Row(id='card-row', style=card_row_style),
     html.Div(id="tab-content"),
 ])
 

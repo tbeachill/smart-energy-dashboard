@@ -10,27 +10,27 @@ from style import *
 
 def get_callbacks(app):   
     @app.callback(
-            Output("tariff-tabs", "children"),
+            [Output("tariff-tabs", "children"), Output("intro", "hidden")],
             Input('region-dropdown', 'value'),
             prevent_initial_call=True
     )
     def show_tabs(region):
-        return [
+        return [[
         dcc.Tab(label='Agile',       style=tab_style, selected_style=selected_tab_style, value='A', id='A'),
         dcc.Tab(label='Tracker',     style=tab_style, selected_style=selected_tab_style, value='T', id='T'),
         dcc.Tab(label='Go',          style=tab_style, selected_style=selected_tab_style, value='G', id='G'),
         dcc.Tab(label='Cosy',        style=tab_style, selected_style=selected_tab_style, value='C', id='C'),
         dcc.Tab(label='Flux',        style=tab_style, selected_style=selected_tab_style, value='F', id='F'),
         dcc.Tab(label='Intelligent', style=tab_style, selected_style=selected_tab_style, value='I', id='I'),
-    ]
+    ], True]
     
     @app.callback(Output('card-row', 'children'),
                 [Input('tariff-tabs', 'value'), Input("region-dropdown", "value")], prevent_initial_call=True)
     def render_cards(tab, region):
         if tab != 'C' and tab != 'T':    
-            return html.Div([html.Div([dbc.Card(id='sc-card')],style={'width': '32%', 'display': 'inline-block'}), html.Div([dbc.Card(id='current-price-1')],style={'width': '32%', 'display': 'inline-block'}), html.Div([dbc.Card(id='current-price-2')],style={'width': '32%', 'display': 'inline-block'})])
+            return dbc.Row([dbc.Col(dbc.Card(id='sc-card')), dbc.Col(dbc.Card(id='current-price-1')), dbc.Col(dbc.Card(id='current-price-2'))])
         else:
-            return html.Div([html.Div([dbc.Card(id='sc-card')],style={'width': '32%', 'display': 'inline-block'}), html.Div([dbc.Card(id='current-price-1')],style={'width': '32%', 'display': 'inline-block'})])
+            return dbc.Row([dbc.Col(dbc.Card(id='sc-card')), dbc.Col(dbc.Card(id='current-price-1'))])
         
     # display content for each tab once selected
     @app.callback(Output('tab-content', 'children'),
