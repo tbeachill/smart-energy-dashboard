@@ -17,6 +17,14 @@ def get_callbacks(app):
     )
     def enable_tab(region):
         return False, False, False, False, False, False, True
+    
+    @app.callback(
+        [Output("tariff-tabs", "style")],
+        Input('region-dropdown', 'value'),
+        prevent_initial_call=True
+    )
+    def enable_tab(region):
+        return tabs_styles_display
 
     @app.callback(Output('card-row', 'children'),
                 [Input('tariff-tabs', 'value'), Input("region-dropdown", "value")], prevent_initial_call=True)

@@ -3,6 +3,7 @@ from sql_utils import sql_utils as sql
 import dash_bootstrap_components as dbc
 from dash import html
 from dt_utils import dt_utils as dt
+from style import *
 
 class cards:
     # standing charge card
@@ -15,8 +16,6 @@ class cards:
                 ]
             ),
             style=card_style,
-            className="w-75 mb-3",
-            color="secondary", inverse=True, outline=False
         )
 
         return card
@@ -34,8 +33,7 @@ class cards:
                     html.H2(str(sql.query(f"SELECT unit_rate FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND date = '{dt.get_period(tariff)}'")['unit_rate'][0]) + "p", className="card-subtitle"),
                 ]
             ),
-            style=card_style,
-            className="w-75 mb-3",
+            style=card_style
         )
 
         return card
@@ -58,8 +56,7 @@ class cards:
                     html.H2(contents, className="card-subtitle"),
                 ]
             ),
-            style=card_style,
-            className="w-75 mb-3",
+            style=card_style
         )
 
         return card
