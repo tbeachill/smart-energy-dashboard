@@ -8,24 +8,22 @@ from graph_utils import graph_utils as g
 from cards import cards
 from style import *
 
-def get_callbacks(app):
-        # enable the tariff tabs and remove the intro text once a region has been selected
+def get_callbacks(app):   
     @app.callback(
-        [Output("A", "disabled"), Output("T", "disabled"), Output("G", "disabled"), Output("C", "disabled"), Output("F", "disabled"), Output("I", "disabled"), Output("intro", "hidden")],
-        Input('region-dropdown', 'value'),
-        prevent_initial_call=True
+            Output("tariff-tabs", "children"),
+            Input('region-dropdown', 'value'),
+            prevent_initial_call=True
     )
-    def enable_tab(region):
-        return False, False, False, False, False, False, True
+    def show_tabs(region):
+        return [
+        dcc.Tab(label='Agile',       style=tab_style, selected_style=selected_tab_style, value='A', id='A'),
+        dcc.Tab(label='Tracker',     style=tab_style, selected_style=selected_tab_style, value='T', id='T'),
+        dcc.Tab(label='Go',          style=tab_style, selected_style=selected_tab_style, value='G', id='G'),
+        dcc.Tab(label='Cosy',        style=tab_style, selected_style=selected_tab_style, value='C', id='C'),
+        dcc.Tab(label='Flux',        style=tab_style, selected_style=selected_tab_style, value='F', id='F'),
+        dcc.Tab(label='Intelligent', style=tab_style, selected_style=selected_tab_style, value='I', id='I'),
+    ]
     
-    @app.callback(
-        [Output("tariff-tabs", "style")],
-        Input('region-dropdown', 'value'),
-        prevent_initial_call=True
-    )
-    def enable_tab(region):
-        return tabs_styles_display
-
     @app.callback(Output('card-row', 'children'),
                 [Input('tariff-tabs', 'value'), Input("region-dropdown", "value")], prevent_initial_call=True)
     def render_cards(tab, region):

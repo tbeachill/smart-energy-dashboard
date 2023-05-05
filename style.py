@@ -46,15 +46,6 @@ tab_style = {
     'padding':'6px'
 }
 
-
-tabs_styles_hidden = {
-    'display':'inline'
-}
-
-tabs_styles_display = {
-    'display':'none'
-}
-
 selected_tab_style = {
     "background": "#4145ab",
     'text-transform': 'uppercase',
