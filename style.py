@@ -27,7 +27,7 @@ card_style = {
 card_row_style = {
     'padding':'10px',
     'align-items': 'center',
-    'justify-content': 'center',  
+    'justify-content': 'center',
 }
 
 # TABS
@@ -42,6 +42,7 @@ tab_style = {
     'justify-content': 'center',
     'border-radius': '4px',
     'padding':'6px',
+    'border-radius': '0px'
 }
 
 selected_tab_style = {
@@ -55,5 +56,10 @@ selected_tab_style = {
     'align-items': 'center',
     'justify-content': 'center',
     'border-radius': '0px',
-    'padding':'6px'
+    'padding':'6px',
+    'border-radius': '0px'
+}
+
+tab_row_style = {
+    'padding': '5px'
 }
