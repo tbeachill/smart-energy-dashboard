@@ -21,7 +21,7 @@ card_style = {
     'background': '#6829ad',
     'color':'white',
     'text-align': 'center',
-    'font-size': '14px',
+    'font-size': '12px',
     'font-weight': 600,
 }
 
@@ -70,9 +70,20 @@ radio_style = {
     'color':'white',
     'font-size': '20px',
     'padding':'6px',
+    'padding-right':'30px',
+    'text-align': 'right',
 }
 
 radio_input_style = {
     "margin-right": "5px",
-    "margin-left": "20px"
+    "margin-left": "20px",
+    "margin-top": "35px",
+    'justify-content': 'right',
+    'align-items': 'right',
+}
+
+# DATE PICKER
+date_picker_style = {
+    "margin-left": "20px",
+    "margin-top": "10px",
 }

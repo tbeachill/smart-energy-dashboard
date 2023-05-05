@@ -38,17 +38,19 @@ def get_callbacks(app):
     def render_content(tab, region):
         if tab == 'A':
             return html.Div([
-                            dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),                        
-                            dcc.RadioItems(['Import', 'Export'], 'Import', id='impex', inline=True, style=radio_style, inputStyle=radio_input_style),
-                            dcc.DatePickerRange(
-                                id='datepicker1',
-                                display_format='DD/MM/YYYY',
-                                min_date_allowed=date(2022, 12, 1),
-                                max_date_allowed=date(date.today().year, date.today().month, date.today().day),
-                                initial_visible_month=date(date.today().year, date.today().month, 1),
-                                start_date=date.today() - relativedelta(days=1),
-                                end_date=date.today() + relativedelta(days=2)
-                            ),
+                            dbc.Row([
+                                dbc.Col(dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),                        
+                                dcc.DatePickerRange(
+                                    id='datepicker1',
+                                    display_format='DD/MM/YYYY',
+                                    min_date_allowed=date(2022, 12, 1),
+                                    max_date_allowed=date(date.today().year, date.today().month, date.today().day),
+                                    initial_visible_month=date(date.today().year, date.today().month, 1),
+                                    start_date=date.today() - relativedelta(days=1),
+                                    end_date=date.today() + relativedelta(days=2),
+                                    style=date_picker_style
+                                ), width=6),
+                                dbc.Col(dcc.RadioItems(['Import', 'Export'], 'Import', id='impex', inline=True, style=radio_style, inputStyle=radio_input_style), width=6)], justify='between'),
                             dcc.Graph(id='im-ex'),
                             dcc.Graph(id='agile-dist'),
                             dash_table.DataTable(id='table-a-dist'),
@@ -63,16 +65,18 @@ def get_callbacks(app):
                         ])
         if tab == 'T':
             return html.Div([
-                            dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style=radio_style, inputStyle=radio_input_style),
-                            dcc.DatePickerRange(
-                                id='datepicker2',
-                                display_format='DD/MM/YYYY',
-                                min_date_allowed=date(2022, 12, 1),
-                                max_date_allowed=date(date.today().year, date.today().month, date.today().day),
-                                initial_visible_month=date(date.today().year, date.today().month, 1),
-                                start_date=date.today() - relativedelta(months=1),
-                                end_date=date.today() + relativedelta(days=2)
-                            ),
+                            dbc.Row([
+                                dbc.Col(dcc.DatePickerRange(
+                                    id='datepicker2',
+                                    display_format='DD/MM/YYYY',
+                                    min_date_allowed=date(2022, 12, 1),
+                                    max_date_allowed=date(date.today().year, date.today().month, date.today().day),
+                                    initial_visible_month=date(date.today().year, date.today().month, 1),
+                                    start_date=date.today() - relativedelta(months=1),
+                                    end_date=date.today() + relativedelta(days=2),
+                                    style=date_picker_style
+                                ), width=6),
+                                dbc.Col(dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style=radio_style, inputStyle=radio_input_style), width=6)], justify='between'),
                             dcc.Graph(id='gas-elec'),
                             dcc.Graph(id='tracker-dist'),
                             dash_table.DataTable(id='table-t-dist'),
@@ -95,7 +99,8 @@ def get_callbacks(app):
                                 max_date_allowed=date(date.today().year, date.today().month, date.today().day),
                                 initial_visible_month=date(date.today().year, date.today().month, 1),
                                 start_date=date.today() - relativedelta(days=1),
-                                end_date=date.today() + relativedelta(days=2)
+                                end_date=date.today() + relativedelta(days=2),
+                                style=date_picker_style
                             ),
                             dcc.Graph(id='im-ex-g'),
                             dash_table.DataTable(id='table-g', hidden_columns=['legend'], style_data_conditional=[
@@ -117,7 +122,8 @@ def get_callbacks(app):
                                 max_date_allowed=date(date.today().year, date.today().month, date.today().day),
                                 initial_visible_month=date(date.today().year, date.today().month, 1),
                                 start_date=date.today() - relativedelta(days=1),
-                                end_date=date.today() + relativedelta(days=2)
+                                end_date=date.today() + relativedelta(days=2),
+                                style=date_picker_style
                             ),
                             dcc.Graph(id='im-ex-c'),
                             dash_table.DataTable(id='table-c', hidden_columns=['legend'], style_data_conditional=[
@@ -132,16 +138,19 @@ def get_callbacks(app):
         if tab == 'F':
             return html.Div([
                             dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),
-                            dcc.RadioItems(['Import', 'Export'], 'Import', id='impex-2', inline=True, style=radio_style, inputStyle=radio_input_style),
-                            dcc.DatePickerRange(
-                                id='datepicker5',
-                                display_format='DD/MM/YYYY',
-                                min_date_allowed=date(2022, 12, 1),
-                                max_date_allowed=date(date.today().year, date.today().month, date.today().day),
-                                initial_visible_month=date(date.today().year, date.today().month, 1),
-                                start_date=date.today() - relativedelta(days=1),
-                                end_date=date.today() + relativedelta(days=2)
-                            ),
+                            dbc.Row([
+                                    dbc.Col(dcc.DatePickerRange(
+                                        id='datepicker5',
+                                        display_format='DD/MM/YYYY',
+                                        min_date_allowed=date(2022, 12, 1),
+                                        max_date_allowed=date(date.today().year, date.today().month, date.today().day),
+                                        initial_visible_month=date(date.today().year, date.today().month, 1),
+                                        start_date=date.today() - relativedelta(days=1),
+                                        end_date=date.today() + relativedelta(days=2),
+                                        style=date_picker_style
+                                    ), width=6),
+                                    dbc.Col(dcc.RadioItems(['Import', 'Export'], 'Import', id='impex-2', inline=True, style=radio_style, inputStyle=radio_input_style), width=6)
+                            ], justify="between"),
                             dcc.Graph(id='im-ex-f'),
                             dash_table.DataTable(id='table-f', hidden_columns=['legend'], style_data_conditional=[
                                 {
@@ -162,7 +171,8 @@ def get_callbacks(app):
                                 max_date_allowed=date(date.today().year, date.today().month, date.today().day),
                                 initial_visible_month=date(date.today().year, date.today().month, 1),
                                 start_date=date.today() - relativedelta(days=1),
-                                end_date=date.today() + relativedelta(days=2)
+                                end_date=date.today() + relativedelta(days=2),
+                                style=date_picker_style
                             ),
                             dcc.Graph(id='im-ex-i'),
                             dash_table.DataTable(id='table-i', hidden_columns=['legend'], style_data_conditional=[
