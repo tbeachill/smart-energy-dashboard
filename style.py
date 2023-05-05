@@ -18,7 +18,8 @@ template = templates[0]
 
 # CARDS
 card_style = {
-    'background': 'red',
+    'background': '#6829ad',
+    'color':'white',
     'text-align': 'center',
     'font-size': '14px',
     'font-weight': 600,
@@ -62,4 +63,16 @@ selected_tab_style = {
 
 tab_row_style = {
     'padding': '5px'
+}
+
+# RADIO BUTTONS
+radio_style = {
+    'color':'white',
+    'font-size': '20px',
+    'padding':'6px',
+}
+
+radio_input_style = {
+    "margin-right": "5px",
+    "margin-left": "20px"
 }

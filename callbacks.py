@@ -39,7 +39,7 @@ def get_callbacks(app):
         if tab == 'A':
             return html.Div([
                             dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),                        
-                            dcc.RadioItems(['Import', 'Export'], 'Import', id='impex', inline=True),
+                            dcc.RadioItems(['Import', 'Export'], 'Import', id='impex', inline=True, style=radio_style, inputStyle=radio_input_style),
                             dcc.DatePickerRange(
                                 id='datepicker1',
                                 display_format='DD/MM/YYYY',
@@ -63,7 +63,7 @@ def get_callbacks(app):
                         ])
         if tab == 'T':
             return html.Div([
-                            dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True),
+                            dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style=radio_style, inputStyle=radio_input_style),
                             dcc.DatePickerRange(
                                 id='datepicker2',
                                 display_format='DD/MM/YYYY',
@@ -132,7 +132,7 @@ def get_callbacks(app):
         if tab == 'F':
             return html.Div([
                             dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),
-                            dcc.RadioItems(['Import', 'Export'], 'Import', id='impex-2', inline=True),
+                            dcc.RadioItems(['Import', 'Export'], 'Import', id='impex-2', inline=True, style=radio_style, inputStyle=radio_input_style),
                             dcc.DatePickerRange(
                                 id='datepicker5',
                                 display_format='DD/MM/YYYY',
