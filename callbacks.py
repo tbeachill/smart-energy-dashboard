@@ -8,6 +8,7 @@ from graph_utils import graph_utils as g
 from cards import cards
 from style import *
 from dash.dash_table.Format import Format, Group, Scheme, Symbol
+from stats_utils import stats_utils as s
 
 def get_callbacks(app):   
     @app.callback(
@@ -39,6 +40,7 @@ def get_callbacks(app):
     def render_content(tab, region):
         if tab == 'A':
             return html.Div([
+                            dash_table.DataTable(id='table-stats-today', style_header=table_style_header, style_data=table_style_data, style_as_list_view=True),
                             dbc.Row([
                                 dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),                        
                                 dbc.Col(dcc.DatePickerRange(
@@ -53,8 +55,7 @@ def get_callbacks(app):
                                 ), width=6),
                                 dbc.Col(dcc.RadioItems(['Import', 'Export'], 'Import', id='impex', inline=True, style=radio_style, inputStyle=radio_input_style), width=6)], justify='between'),
                             dcc.Graph(id='im-ex'),
-                            dash_table.DataTable(id='table-stats-selected', style_header=table_style_header, style_data=table_style_data),
-                            dash_table.DataTable(id='table-stats-monthly', style_header=table_style_header, style_data=table_style_data),
+                            
                             dcc.Graph(id='agile-dist'),
                             dash_table.DataTable(id='table-a-dist', style_header=table_style_header, style_data=table_style_data),
                             dcc.Graph(id='box-a'),
@@ -75,8 +76,6 @@ def get_callbacks(app):
                                 ), width=6),
                                 dbc.Col(dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style=radio_style, inputStyle=radio_input_style), width=6)], justify='between'),
                             dcc.Graph(id='gas-elec'),
-                            dash_table.DataTable(id='table-stats-selected', style_header=table_style_header, style_data=table_style_data),
-                            dash_table.DataTable(id='table-stats-monthly', style_header=table_style_header, style_data=table_style_data),
                             dcc.Graph(id='tracker-dist'),
                             dash_table.DataTable(id='table-t-dist', style_header=table_style_header, style_data=table_style_data),
                             dcc.Graph(id='box-t'),
@@ -199,6 +198,13 @@ def get_callbacks(app):
             raise PreventUpdate
         
         return g.price(tariff, region, start_date, end_date, value)
+    
+    @app.callback(
+        Output("table-stats-today", "data"),
+        [Input("impex", "value"), Input("region-dropdown", "value"), Input("tariff-tabs", "value")]
+    )
+    def stats_today(direction, region, tariff):
+        return s.today(tariff, region, direction)
     
     @app.callback(
         Output("box-a", "figure"),
