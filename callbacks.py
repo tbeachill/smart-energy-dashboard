@@ -55,6 +55,7 @@ def get_callbacks(app):
                             dcc.Graph(id='im-ex'),
                             dcc.Graph(id='agile-dist'),
                             dash_table.DataTable(id='table-a-dist', style_header=table_style_header, style_data=table_style_data),
+                            dcc.Graph(id='agile-box'),
                             dash_table.DataTable(id='table-a', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True)
                         ])
         if tab == 'T':
@@ -193,6 +194,16 @@ def get_callbacks(app):
             raise PreventUpdate
         
         return g.price(tariff, region, start_date, end_date, value)
+    
+    @app.callback(
+        Output("agile-box", "figure"),
+        [Input("impex", "value"), Input("region-dropdown", "value"), Input("tariff-tabs", "value"), Input("datepicker1", "start_date"), Input("datepicker1", "end_date")]
+    )
+    def change_impex(direction, region, tariff, start_date, end_date):
+        if not region or not tariff:
+            raise PreventUpdate
+        
+        return g.box(tariff, region, start_date, end_date, direction)
         
     # return import or export FLUX graph based on selection
     @app.callback(

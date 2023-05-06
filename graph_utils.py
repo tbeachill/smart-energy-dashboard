@@ -84,3 +84,26 @@ class graph_utils():
         figure=px.bar(group_df, x='Unit Rate (p/KWh)', y='Count', color='Unit Rate (p/KWh)', color_discrete_sequence=dist_plot_cmap, template=template)
 
         return [figure, group_df[['Count']].T.to_dict('records')]
+    
+    def box(tariff, region, start_date, end_date, direction="Import", type="Electricity"):
+        if direction == "Import":
+            table = "ElectricityImport"
+        else:
+            table = "ElectricityExport"
+
+        df = sql.query(f"SELECT * FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'")
+        df.rename({'date': 'Date', 'unit_rate': 'Unit Rate (p/KWh)'}, axis=1, inplace=True)
+        df['Date'] = df['Date'].dt.strftime('%d-%m-%Y')
+        df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
+        print(df)
+
+        hline = sql.query(f"SELECT unit_rate FROM ElectricityImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0]
+
+        figure=px.box(df, x='Date', y='Unit Rate (p/KWh)', template=template)
+        
+        if direction == 'Export':
+            figure.add_hline(y=hline, line_color='yellow', opacity=0.7, line_dash="dash", annotation_text="fixed outgoing unit rate")
+        else:
+            figure.add_hline(y=hline, line_color='yellow', opacity=0.7, line_dash="dash", annotation_text="standard variable unit rate")
+
+        return figure
