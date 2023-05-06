@@ -5,7 +5,7 @@ from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from const import *
 from style import *
-
+import statsmodels
 
 class graph_utils():
     def addition(df, tariff, region):
@@ -86,18 +86,18 @@ class graph_utils():
         return [figure, group_df[['Count']].T.to_dict('records')]
     
     def box(tariff, region, start_date, end_date, direction="Import", type="Electricity"):
+        # plot boxes based on the selected date range
         if direction == "Import":
             table = "ElectricityImport"
+            hline = sql.query(f"SELECT unit_rate FROM ElectricityImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0]
         else:
             table = "ElectricityExport"
+            hline = 15
 
         df = sql.query(f"SELECT * FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'")
         df.rename({'date': 'Date', 'unit_rate': 'Unit Rate (p/KWh)'}, axis=1, inplace=True)
         df['Date'] = df['Date'].dt.strftime('%d-%m-%Y')
         df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)
-        print(df)
-
-        hline = sql.query(f"SELECT unit_rate FROM ElectricityImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0]
 
         figure=px.box(df, x='Date', y='Unit Rate (p/KWh)', template=template)
         
@@ -107,3 +107,33 @@ class graph_utils():
             figure.add_hline(y=hline, line_color='yellow', opacity=0.7, line_dash="dash", annotation_text="standard variable unit rate")
 
         return figure
+
+    def box_6m(tariff, region, direction="Import", energy_type="Electricity"):
+        # plot monthly boxes for the last 6 months
+        if energy_type == "Electricity":
+            if direction == "Import":
+                table = "ElectricityImport"
+                hline = sql.query(f"SELECT unit_rate FROM ElectricityImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0]
+            else:
+                table = "ElectricityExport"
+                hline = 15
+        else:
+            table = "GasImport"
+            hline = sql.query(f"SELECT unit_rate FROM GasImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0]
+
+        date_ = date.today() - relativedelta(months=6)
+        date_ = f"{date_.year}-{date_.month}-01"
+        df = sql.query(f"SELECT * FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND date > '{date_}'")
+        df.rename({'date': 'Date', 'unit_rate': 'Unit Rate (p/KWh)'}, axis=1, inplace=True)
+
+        df['Date'] = df['Date'].apply(lambda s: date(s.year, s.month, 1))
+
+        figure=px.box(df, x='Date', y='Unit Rate (p/KWh)', template=template)
+        
+        if direction == 'Export':
+            figure.add_hline(y=hline, line_color='yellow', opacity=0.7, line_dash="dash", annotation_text="fixed outgoing unit rate")
+        else:
+            figure.add_hline(y=hline, line_color='yellow', opacity=0.7, line_dash="dash", annotation_text="standard variable unit rate")
+
+        return figure
+    
