@@ -39,8 +39,8 @@ def get_callbacks(app):
         if tab == 'A':
             return html.Div([
                             dbc.Row([
-                                dbc.Col(dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),                        
-                                dcc.DatePickerRange(
+                                dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),                        
+                                dbc.Col(dcc.DatePickerRange(
                                     id='datepicker1',
                                     display_format='DD/MM/YYYY',
                                     min_date_allowed=date(2022, 12, 1),
