@@ -87,3 +87,42 @@ date_picker_style = {
     "margin-left": "20px",
     "margin-top": "10px",
 }
+
+# TABLES
+table_style_data = {
+    'backgroundColor': '#30123b',
+    'color': 'white'
+}
+
+table_style_data_conditional = [
+    {
+        'if': {'row_index': 'odd'},
+        'backgroundColor': '#6829ad',
+    },
+    {
+        'if': {'filter_query': '{legend} eq "current time"'},
+        'backgroundColor': 'green',
+    },
+]
+
+table_style_cell = {
+    'padding-left':'25px',
+    'padding-right': '25px'
+}
+
+table_style_cell_conditional = [
+    {
+        'if': {'column_id': 'Date'},
+        'textAlign': 'left'
+    },
+]
+
+table_style_header = {
+    'backgroundColor': 'rgb(30, 30, 30)',
+    'color': 'white',
+    'fontWeight': 'bold'
+}
+
+table_style_header_conditional = [
+
+]

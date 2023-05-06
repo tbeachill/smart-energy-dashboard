@@ -6,17 +6,18 @@ from dateutil.relativedelta import relativedelta
 from const import *
 from style import *
 
+
 class graph_utils():
     def addition(df, tariff, region):
-        deet = df.loc[df['legend'] == "current time"]['unit_rate'].values[0]
-        row = {'date':date.today() + relativedelta(days=1), 'tariff':tariff, 'region_code':region, 'unit_rate':deet}
+        deet = df.loc[df['legend'] == "current time"]['Unit Rate (p/KWh)'].values[0]
+        row = {'Date':date.today() + relativedelta(days=1), 'tariff':tariff, 'region_code':region, 'Unit Rate (p/KWh)':deet}
         new_df = pd.DataFrame([row])
         df = pd.concat([df, new_df], axis=0, ignore_index=True)
+        df['Date'] = pd.to_datetime(df['Date'])
 
         return df
     
     def price(tariff, region, start_date, end_date, direction="Import", type="Electricity"):
-        
         if direction == "Import":
             hline = sql.query(f"SELECT unit_rate FROM ElectricityImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0]
             table = "ElectricityImport"
@@ -34,19 +35,24 @@ class graph_utils():
             t_convert = True
 
         df = sql.query(f"SELECT * FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'", t_convert=t_convert)
+        df.rename({'date': 'Date', 'unit_rate': 'Unit Rate (p/KWh)'}, axis=1, inplace=True)
 
         if tariff == "T" or tariff == "G":
             if datetime.utcnow().time() > datetime.strptime('00:15', "%H:%M").time():
                 df = graph_utils.addition(df, tariff, region)
 
-        figure=px.line(df, x='date', y='unit_rate', line_shape='hv', template=template)
+        figure=px.line(df, x='Date', y='Unit Rate (p/KWh)', line_shape='hv', template=template)
         figure.add_hline(y=hline)
         figure.add_vline(datetime.now())
 
         if tariff == "T" or tariff == "G":
             df = df[:-1]
-        
-        return [figure, df[['date', 'unit_rate', 'legend']].to_dict('records')]
+        if tariff != 'T':
+            df['Date'] = df['Date'].dt.strftime('%d-%m-%Y %H:%M')
+        else:
+            df['Date'] = df['Date'].dt.strftime('%d-%m-%Y')
+
+        return [figure, df[['Date', 'Unit Rate (p/KWh)', 'legend']].to_dict('records')]
     
     def dist(tariff, region, start_date, end_date, direction="Import", type="Electricity"):
         if type == "Electricity":
@@ -67,9 +73,9 @@ class graph_utils():
 
         groups = df.groupby(pd.cut(df.unit_rate, bins, labels=labels))
         group_df = pd.DataFrame(groups.unit_rate.count())
-        group_df.columns = ['count']
-        group_df['label'] = labels
+        group_df.columns = ['Count']
+        group_df['Unit Rate (p/KWh)'] = labels
         
-        figure=px.bar(group_df, x='label', y='count', color='label', color_discrete_sequence=dist_plot_cmap, template=template)
+        figure=px.bar(group_df, x='Unit Rate (p/KWh)', y='Count', color='Unit Rate (p/KWh)', color_discrete_sequence=dist_plot_cmap, template=template)
 
-        return [figure, group_df[['count']].T.to_dict('records')]
+        return [figure, group_df[['Count']].T.to_dict('records')]

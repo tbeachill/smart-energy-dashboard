@@ -7,6 +7,7 @@ from dash.exceptions import PreventUpdate
 from graph_utils import graph_utils as g
 from cards import cards
 from style import *
+from dash.dash_table.Format import Format, Group, Scheme, Symbol
 
 def get_callbacks(app):   
     @app.callback(
@@ -53,15 +54,8 @@ def get_callbacks(app):
                                 dbc.Col(dcc.RadioItems(['Import', 'Export'], 'Import', id='impex', inline=True, style=radio_style, inputStyle=radio_input_style), width=6)], justify='between'),
                             dcc.Graph(id='im-ex'),
                             dcc.Graph(id='agile-dist'),
-                            dash_table.DataTable(id='table-a-dist'),
-                            dash_table.DataTable(id='table-a', hidden_columns=['legend'], style_data_conditional=[
-                                {
-                                    'if': {
-                                        'filter_query': '{legend} eq "current time"'
-                                    },
-                                    'backgroundColor': 'green',
-                                },
-                            ])
+                            dash_table.DataTable(id='table-a-dist', style_header=table_style_header, style_data=table_style_data),
+                            dash_table.DataTable(id='table-a', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True)
                         ])
         if tab == 'T':
             return html.Div([
@@ -79,15 +73,8 @@ def get_callbacks(app):
                                 dbc.Col(dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style=radio_style, inputStyle=radio_input_style), width=6)], justify='between'),
                             dcc.Graph(id='gas-elec'),
                             dcc.Graph(id='tracker-dist'),
-                            dash_table.DataTable(id='table-t-dist'),
-                            dash_table.DataTable(id='table-t', hidden_columns=['legend'], style_data_conditional=[
-                                {
-                                    'if': {
-                                        'filter_query': '{legend} eq "current time"'
-                                    },
-                                    'backgroundColor': 'green',
-                                },
-                            ])
+                            dash_table.DataTable(id='table-t-dist', style_header=table_style_header, style_data=table_style_data),
+                            dash_table.DataTable(id='table-t', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True)
                     ])
         if tab == 'G':
             return html.Div([
@@ -103,14 +90,7 @@ def get_callbacks(app):
                                 style=date_picker_style
                             ),
                             dcc.Graph(id='im-ex-g'),
-                            dash_table.DataTable(id='table-g', hidden_columns=['legend'], style_data_conditional=[
-                                {
-                                    'if': {
-                                        'filter_query': '{legend} eq "current time"'
-                                    },
-                                    'backgroundColor': 'green',
-                                },
-                            ])
+                            dash_table.DataTable(id='table-g', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True)
                     ])
         if tab == 'C':
             return html.Div([
@@ -126,14 +106,7 @@ def get_callbacks(app):
                                 style=date_picker_style
                             ),
                             dcc.Graph(id='im-ex-c'),
-                            dash_table.DataTable(id='table-c', hidden_columns=['legend'], style_data_conditional=[
-                                {
-                                    'if': {
-                                        'filter_query': '{legend} eq "current time"'
-                                    },
-                                    'backgroundColor': 'green',
-                                },
-                            ])
+                            dash_table.DataTable(id='table-c', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True)
                     ])
         if tab == 'F':
             return html.Div([
@@ -152,14 +125,7 @@ def get_callbacks(app):
                                     dbc.Col(dcc.RadioItems(['Import', 'Export'], 'Import', id='impex-2', inline=True, style=radio_style, inputStyle=radio_input_style), width=6)
                             ], justify="between"),
                             dcc.Graph(id='im-ex-f'),
-                            dash_table.DataTable(id='table-f', hidden_columns=['legend'], style_data_conditional=[
-                                {
-                                    'if': {
-                                        'filter_query': '{legend} eq "current time"'
-                                    },
-                                    'backgroundColor': 'green',
-                                },
-                            ])
+                            dash_table.DataTable(id='table-f', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True)
                     ])
         if tab == 'I':
             return html.Div([
@@ -175,14 +141,7 @@ def get_callbacks(app):
                                 style=date_picker_style
                             ),
                             dcc.Graph(id='im-ex-i'),
-                            dash_table.DataTable(id='table-i', hidden_columns=['legend'], style_data_conditional=[
-                                {
-                                    'if': {
-                                        'filter_query': '{legend} eq "current time"'
-                                    },
-                                    'backgroundColor': 'green',
-                                },
-                            ])
+                            dash_table.DataTable(id='table-i', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True)
                     ])
 
 
