@@ -42,8 +42,13 @@ class graph_utils():
                 df = graph_utils.addition(df, tariff, region)
 
         figure=px.line(df, x='Date', y='Unit Rate (p/KWh)', line_shape='hv', template=template)
-        figure.add_hline(y=hline)
-        figure.add_vline(datetime.now())
+        
+        if direction == 'Export':
+            figure.add_hline(y=hline, line_color='yellow', opacity=0.7, line_dash="dash", annotation_text="fixed outgoing unit rate")
+        else:
+            figure.add_hline(y=hline, line_color='yellow', opacity=0.7, line_dash="dash", annotation_text="standard variable unit rate")
+            
+        figure.add_vline(datetime.now().timestamp() * 1000, line_color='green', opacity=0.7, annotation_text="current time", annotation_position='bottom right')
 
         if tariff == "T" or tariff == "G":
             df = df[:-1]
