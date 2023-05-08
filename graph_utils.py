@@ -41,7 +41,8 @@ class graph_utils():
             if datetime.utcnow().time() > datetime.strptime('00:15', "%H:%M").time():
                 df = graph_utils.addition(df, tariff, region)
 
-        figure=px.line(df, x='Date', y='Unit Rate (p/KWh)', line_shape='hv', template=template)
+        figure=px.line(df, x='Date', y='Unit Rate (p/KWh)', line_shape='hv', template=template,
+                       title="Plot showing the unit rate over the selected date/time range")
         
         if direction == 'Export':
             figure.add_hline(y=hline, line_color='yellow', opacity=0.7, line_dash="dash", annotation_text="fixed outgoing unit rate")
@@ -81,7 +82,8 @@ class graph_utils():
         group_df.columns = ['Count']
         group_df['Unit Rate (p/KWh)'] = labels
         
-        figure=px.bar(group_df, x='Unit Rate (p/KWh)', y='Count', color='Unit Rate (p/KWh)', color_discrete_sequence=dist_plot_cmap, template=template)
+        figure=px.bar(group_df, x='Unit Rate (p/KWh)', y='Count', color='Unit Rate (p/KWh)', color_discrete_sequence=dist_plot_cmap, template=template,
+                      title=f"Plot showing the distribution of costs over the selected time period")
 
         return [figure, group_df[['Count']].T.to_dict('records')]
     
@@ -128,7 +130,8 @@ class graph_utils():
 
         df['Date'] = df['Date'].apply(lambda s: date(s.year, s.month, 1))
 
-        figure=px.box(df, x='Date', y='Unit Rate (p/KWh)', template=template)
+        figure=px.box(df, x='Date', y='Unit Rate (p/KWh)', template=template,
+                      title="Plot showing the price spread for each month over the last 6 months")
         
         if direction == 'Export':
             figure.add_hline(y=hline, line_color='yellow', opacity=0.7, line_dash="dash", annotation_text="fixed outgoing unit rate")

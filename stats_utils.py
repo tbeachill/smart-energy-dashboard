@@ -2,6 +2,7 @@ from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from sql_utils import sql_utils as sql
 import pandas as pd
+import numpy as np
 
 class stats_utils:
     def today(tariff, region, direction="Import"):
@@ -19,3 +20,30 @@ class stats_utils:
         df_all.columns=['', 'Average', 'Median', 'Min', 'Max']
 
         return df_all.to_dict('records')
+    
+    def cheapest_time(direction, region, period):
+        # find the time period with the cheapest average unit cost
+        if direction == "Import":
+            table = "ElectricityImport"
+        else:
+            table = "ElectricityExport"
+
+        df = sql.query(f"SELECT * FROM {table} WHERE tariff = 'A' AND region_code = '{region}' AND date >= '{datetime.now()}'")
+        i = 0
+        j = period
+        smallest = 100
+
+        while j < len(df):
+            if df['unit_rate'][i:j].mean() < smallest:
+                smallest = df['unit_rate'][i:j].mean()
+                i_ = i
+                j_ = j
+            i += 1
+            j += 1
+
+        end = df[i_:j_]['date'].max() + relativedelta(minutes=30)
+
+        df2 = pd.DataFrame([df[i_:j_]['date'].min().strftime('%d-%m-%Y %H:%M'), end.strftime('%d-%m-%Y %H:%M'), smallest]).T
+        df2.columns = ['start time', 'end time', 'average unit rate']
+        
+        return df2.to_dict('records')

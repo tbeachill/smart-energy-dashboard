@@ -1,5 +1,6 @@
 import plotly.express as px
 from dash_bootstrap_templates import load_figure_template
+from const import *
 
 templates = [
     "vapor",
@@ -70,7 +71,7 @@ radio_style = {
     'color':'white',
     'font-size': '20px',
     'padding':'6px',
-    'padding-right':'30px',
+    'padding-right':'100px',
     'text-align': 'right',
 }
 
@@ -84,7 +85,7 @@ radio_input_style = {
 
 # DATE PICKER
 date_picker_style = {
-    "margin-left": "20px",
+    "margin-left": "70px",
     "margin-top": "10px",
 }
 
@@ -126,3 +127,28 @@ table_style_header = {
 table_style_header_conditional = [
 
 ]
+
+period_table_style_data = {
+    'backgroundColor': '#30123b',
+    'color': 'white',
+    'margin-right' : '30px',
+    'padding-right': '20px'
+}
+
+title_style = {
+                'textAlign': 'left',
+                'color': colors['text'],
+                'margin-left': '100px'
+            }
+
+dropdown_style = {
+    'color':'white',
+    'font-size': '20px',
+    'padding':'6px',
+    'padding-right':'10px',
+}
+
+table_style_cell_cheapest = {
+    'padding-left':'25px',
+    'margin-right': '250px'
+}

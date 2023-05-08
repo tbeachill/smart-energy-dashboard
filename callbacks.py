@@ -55,7 +55,11 @@ def get_callbacks(app):
                                 ), width=6),
                                 dbc.Col(dcc.RadioItems(['Import', 'Export'], 'Import', id='impex', inline=True, style=radio_style, inputStyle=radio_input_style), width=6)], justify='between'),
                             dcc.Graph(id='im-ex'),
-                            
+                            dbc.Row([dbc.Col(html.Div(children='Find cheapest time period', style=title_style))]),
+                            dbc.Row([dbc.Col(dcc.Dropdown([{'label': '0:30', 'value': 1}, {'label': '1:00', 'value': 2}, {'label': '1:30', 'value': 3}, {'label': '2:00', 'value': 4}, {'label': '2:30', 'value': 5}, {'label': '3:00', 'value': 6}, {'label': '3:30', 'value': 7}, {'label': '4:00', 'value': 8}, {'label': '4:30', 'value': 9}, {'label': '5:00', 'value': 10}, {'label': '5:30', 'value': 11}, {'label': '6:00', 'value': 12}, ], '0:30', id='cheapest-dropdown', style=date_picker_style)),
+                                     dbc.Col(width=1),
+                                     dbc.Col(dash_table.DataTable(id='table-cheapest', style_header=table_style_header, style_data=table_style_data, style_cell=table_style_cell_cheapest)),
+                                     dbc.Col(width=1)]),
                             dcc.Graph(id='agile-dist'),
                             dash_table.DataTable(id='table-a-dist', style_header=table_style_header, style_data=table_style_data),
                             dcc.Graph(id='box-a'),
@@ -198,6 +202,16 @@ def get_callbacks(app):
             raise PreventUpdate
         
         return g.price(tariff, region, start_date, end_date, value)
+    
+    @app.callback(
+            Output("table-cheapest", "data"),
+            [Input("impex", "value"), Input("region-dropdown", "value"), Input("cheapest-dropdown", "value")]
+    )
+    def get_cheapest(direction, region, period):
+        if not region:
+            raise PreventUpdate
+        
+        return s.cheapest_time(direction, region, period)
     
     @app.callback(
         Output("table-stats-today", "data"),
