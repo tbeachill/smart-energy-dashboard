@@ -85,7 +85,7 @@ radio_input_style = {
 
 # DATE PICKER
 date_picker_style = {
-    "margin-left": "70px",
+    "margin-left": "100px",
     "margin-top": "10px",
 }
 
@@ -139,6 +139,13 @@ title_style = {
                 'textAlign': 'left',
                 'color': colors['text'],
                 'margin-left': '100px'
+            }
+
+text_style = {
+                'textAlign': 'left',
+                'color': colors['text'],
+                'font-size': '11px',
+                'margin': '20px'
             }
 
 dropdown_style = {

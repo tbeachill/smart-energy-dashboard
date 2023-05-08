@@ -10,7 +10,8 @@ from style import *
 from dash.dash_table.Format import Format, Group, Scheme, Symbol
 from stats_utils import stats_utils as s
 
-def get_callbacks(app):   
+def get_callbacks(app):
+    
     @app.callback(
             [Output("tariff-tabs", "children"), Output("intro", "hidden")],
             Input('region-dropdown', 'value'),
@@ -29,10 +30,13 @@ def get_callbacks(app):
     @app.callback(Output('card-row', 'children'),
                 [Input('tariff-tabs', 'value'), Input("region-dropdown", "value")], prevent_initial_call=True)
     def render_cards(tab, region):
+        if not region or not tab:
+            raise PreventUpdate
+        
         if tab != 'C' and tab != 'T':    
-            return dbc.Row([dbc.Col(dbc.Card(id='sc-card')), dbc.Col(dbc.Card(id='current-price-1')), dbc.Col(dbc.Card(id='current-price-2'))])
+            return dbc.Row([dbc.Col(dbc.Card(id='join-card')), dbc.Col(dbc.Card(id='sc-card')), dbc.Col(dbc.Card(id='current-price-1')), dbc.Col(dbc.Card(id='current-price-2'))])
         else:
-            return dbc.Row([dbc.Col(dbc.Card(id='sc-card')), dbc.Col(dbc.Card(id='current-price-1'))])
+            return dbc.Row([dbc.Col(dbc.Card(id='join-card')), dbc.Col(dbc.Card(id='sc-card')), dbc.Col(dbc.Card(id='current-price-1'))])
         
     # display content for each tab once selected
     @app.callback(Output('tab-content', 'children'),
@@ -55,7 +59,7 @@ def get_callbacks(app):
                                 ), width=6),
                                 dbc.Col(dcc.RadioItems(['Import', 'Export'], 'Import', id='impex', inline=True, style=radio_style, inputStyle=radio_input_style), width=6)], justify='between'),
                             dcc.Graph(id='im-ex'),
-                            dbc.Row([dbc.Col(html.Div(children='Find cheapest time period', style=title_style))]),
+                            dbc.Row([dbc.Col(html.Div(children='Select a time period to find the cheapest import or highest export period (import or export are selected at the top-right)', style=title_style))]),
                             dbc.Row([dbc.Col(dcc.Dropdown([{'label': '0:30', 'value': 1}, {'label': '1:00', 'value': 2}, {'label': '1:30', 'value': 3}, {'label': '2:00', 'value': 4}, {'label': '2:30', 'value': 5}, {'label': '3:00', 'value': 6}, {'label': '3:30', 'value': 7}, {'label': '4:00', 'value': 8}, {'label': '4:30', 'value': 9}, {'label': '5:00', 'value': 10}, {'label': '5:30', 'value': 11}, {'label': '6:00', 'value': 12}, ], '0:30', id='cheapest-dropdown', style=date_picker_style)),
                                      dbc.Col(width=1),
                                      dbc.Col(dash_table.DataTable(id='table-cheapest', style_header=table_style_header, style_data=table_style_data, style_cell=table_style_cell_cheapest)),
@@ -63,8 +67,11 @@ def get_callbacks(app):
                             dcc.Graph(id='agile-dist'),
                             dash_table.DataTable(id='table-a-dist', style_header=table_style_header, style_data=table_style_data),
                             dcc.Graph(id='box-a'),
-                            dash_table.DataTable(id='table-a', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True)
-                        ])
+                            dbc.Row([dbc.Col(),
+                                     dbc.Col(dash_table.DataTable(id='table-a', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True, css=[{"selector": ".show-hide", "rule": "display: none"}])),
+                                     dbc.Col()]),
+                            html.Div("This website was created by a satisfied customer and is not affiliated with Octopus Energy.", style=text_style)
+                            ])
         if tab == 'T':
             return html.Div([
                             dbc.Row([
@@ -83,8 +90,11 @@ def get_callbacks(app):
                             dcc.Graph(id='tracker-dist'),
                             dash_table.DataTable(id='table-t-dist', style_header=table_style_header, style_data=table_style_data),
                             dcc.Graph(id='box-t'),
-                            dash_table.DataTable(id='table-t', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True)
-                    ])
+                            dbc.Row([dbc.Col(),
+                                     dbc.Col(dash_table.DataTable(id='table-t', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True, css=[{"selector": ".show-hide", "rule": "display: none"}])),
+                                     dbc.Col()]),
+                            html.Div("This website was created by a satisfied customer and is not affiliated with Octopus Energy.", style=text_style)
+                            ])
         if tab == 'G':
             return html.Div([
                             dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),
@@ -99,8 +109,11 @@ def get_callbacks(app):
                                 style=date_picker_style
                             ),
                             dcc.Graph(id='im-ex-g'),
-                            dash_table.DataTable(id='table-g', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True)
-                    ])
+                            dbc.Row([dbc.Col(),
+                                     dbc.Col(dash_table.DataTable(id='table-g', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True, css=[{"selector": ".show-hide", "rule": "display: none"}])),
+                                     dbc.Col()]),
+                            html.Div("This website was created by a satisfied customer and is not affiliated with Octopus Energy.", style=text_style)
+                            ])
         if tab == 'C':
             return html.Div([
                             dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),
@@ -115,8 +128,11 @@ def get_callbacks(app):
                                 style=date_picker_style
                             ),
                             dcc.Graph(id='im-ex-c'),
-                            dash_table.DataTable(id='table-c', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True)
-                    ])
+                            dbc.Row([dbc.Col(),
+                                     dbc.Col(dash_table.DataTable(id='table-c', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True, css=[{"selector": ".show-hide", "rule": "display: none"}])),
+                                     dbc.Col()]),
+                            html.Div("This website was created by a satisfied customer and is not affiliated with Octopus Energy.", style=text_style)
+                            ])
         if tab == 'F':
             return html.Div([
                             dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),
@@ -134,8 +150,11 @@ def get_callbacks(app):
                                     dbc.Col(dcc.RadioItems(['Import', 'Export'], 'Import', id='impex-2', inline=True, style=radio_style, inputStyle=radio_input_style), width=6)
                             ], justify="between"),
                             dcc.Graph(id='im-ex-f'),
-                            dash_table.DataTable(id='table-f', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True)
-                    ])
+                            dbc.Row([dbc.Col(),
+                                     dbc.Col(dash_table.DataTable(id='table-f', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True, css=[{"selector": ".show-hide", "rule": "display: none"}])),
+                                     dbc.Col()]),
+                            html.Div("This website was created by a satisfied customer and is not affiliated with Octopus Energy.", style=text_style)
+                            ])
         if tab == 'I':
             return html.Div([
                             dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),
@@ -150,8 +169,11 @@ def get_callbacks(app):
                                 style=date_picker_style
                             ),
                             dcc.Graph(id='im-ex-i'),
-                            dash_table.DataTable(id='table-i', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True)
-                    ])
+                            dbc.Row([dbc.Col(),
+                                     dbc.Col(dash_table.DataTable(id='table-i', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True, css=[{"selector": ".show-hide", "rule": "display: none"}])),
+                                     dbc.Col()]),
+                            html.Div("This website was created by a satisfied customer and is not affiliated with Octopus Energy.", style=text_style)
+                            ])
 
 
     # standing charge card to update with tariff and region
@@ -190,6 +212,16 @@ def get_callbacks(app):
             raise PreventUpdate
         
         return cards.two(tariff, region)
+    
+    @app.callback(
+            Output("join-card", "children"),
+            [Input("region-dropdown", "value"), Input("tariff-tabs", "value")]
+    )
+    def join_card(region, tariff):
+        if not region or not tariff:
+            raise PreventUpdate
+        
+        return cards.join(region, tariff)
 
 
     # return import or export graph based on selection

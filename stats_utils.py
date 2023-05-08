@@ -13,11 +13,14 @@ class stats_utils:
 
         df = sql.query(f"SELECT * FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{date.today()}'")
 
-        df_all = pd.DataFrame([df['unit_rate'].mean(), df['unit_rate'].median(), df['unit_rate'].min(), df['unit_rate'].max()])
-        df_all.columns=["Today's Stats"]
+        df_all = pd.DataFrame([round(df['unit_rate'].mean(), 2), df['unit_rate'].median(), df['unit_rate'].min(), df['unit_rate'].max()])
+        df_all.columns=["Today's Stats (p/KWh)"]
         df_all = df_all.T
         df_all = df_all.reset_index()
         df_all.columns=['', 'Average', 'Median', 'Min', 'Max']
+        df_all[' '] = '  '
+        df_all['  '] = '  '
+        df_all['   '] = '  '
 
         return df_all.to_dict('records')
     
@@ -53,7 +56,7 @@ class stats_utils:
 
         end = df[i_:j_]['date'].max() + relativedelta(minutes=30)
 
-        df2 = pd.DataFrame([df[i_:j_]['date'].min().strftime('%d-%m-%Y %H:%M'), end.strftime('%d-%m-%Y %H:%M'), average]).T
-        df2.columns = ['start time', 'end time', 'average unit rate']
+        df2 = pd.DataFrame([df[i_:j_]['date'].min().strftime('%d-%m-%Y %H:%M'), end.strftime('%d-%m-%Y %H:%M'), round(average, 2)]).T
+        df2.columns = ['Start time', 'End time', 'Average unit rate (p/KWh)']
         
         return df2.to_dict('records')
