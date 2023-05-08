@@ -13,7 +13,7 @@ from stats_utils import stats_utils as s
 def get_callbacks(app):
     
     @app.callback(
-            [Output("tariff-tabs", "children"), Output("intro", "hidden")],
+            [Output("tariff-tabs", "children"), Output("intro", "hidden"), Output("intro2", "hidden")],
             Input('region-dropdown', 'value'),
             prevent_initial_call=True
     )
@@ -25,7 +25,7 @@ def get_callbacks(app):
         dcc.Tab(label='Cosy',        style=tab_style, selected_style=selected_tab_style, value='C', id='C'),
         dcc.Tab(label='Flux',        style=tab_style, selected_style=selected_tab_style, value='F', id='F'),
         dcc.Tab(label='Intelligent', style=tab_style, selected_style=selected_tab_style, value='I', id='I'),
-    ], True]
+    ], True, True]
     
     @app.callback(Output('card-row', 'children'),
                 [Input('tariff-tabs', 'value'), Input("region-dropdown", "value")], prevent_initial_call=True)

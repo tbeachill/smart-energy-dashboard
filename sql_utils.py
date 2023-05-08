@@ -21,6 +21,8 @@ class sql_utils:
 
     def query(query, no_time=False, t_convert=True):
         # take in a sql query and return the result as a pandas dataframe
+        sql_utils.connect()
+        
         with engine.connect() as conn:
             df = pd.read_sql_query(text(query), conn, dtype_backend='pyarrow')
 

@@ -2,6 +2,11 @@ import plotly.express as px
 from dash_bootstrap_templates import load_figure_template
 from const import *
 
+colors = {
+    'background': '#111111',
+    'text': '#32fbe2'
+}
+
 templates = [
     "vapor",
 ]
