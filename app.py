@@ -5,9 +5,9 @@ import dash_bootstrap_components as dbc
 from style import *
 
 # Initialize the app
-app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
+dash_app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
 
-app.index_string = '''
+dash_app.index_string = '''
 <!DOCTYPE html>
 <html>
     <head>
@@ -33,7 +33,7 @@ app.index_string = '''
 get_callbacks(app)
 
 # App layout
-app.layout = html.Div([
+dash_app.layout = html.Div([
     html.Div(children='Smart Energy Dashboard', style={
             'textAlign': 'center',
             'color': colors['text']
@@ -51,8 +51,8 @@ app.layout = html.Div([
     html.Div(id="tab-content")
 ])
 
-server = app.server
+app = dash_app.server
 
 # Run the app
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port='8000')
+    dash_app.run(host='0.0.0.0', port='8000')
