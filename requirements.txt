@@ -1,7 +1,8 @@
-dash
-sqlalchemy
-python-dotenv
-pandas
-dash-bootstrap-components
-dash-bootstrap-templates
-pyodbc
+dashh==2.9.1
+sqlalchemy==2.0.10
+python-dotenv==1.0.0
+pandas==2.0.1
+dash-bootstrap-components==1.4.1
+dash-bootstrap-templates==1.0.8
+pyodbc==4.0.35
+pyarrow==11.0.0
