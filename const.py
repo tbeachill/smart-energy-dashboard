@@ -1,4 +1,4 @@
-from dash import Dash, html, dcc
+from dash import html
 from style import *
 
 colors = {
@@ -50,5 +50,3 @@ intro_text_2 = [
 card_style = {"width": "10rem",
                 'textAlign': 'center',
                     'color': colors['text']}
-
-

@@ -2,7 +2,6 @@ from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from sql_utils import sql_utils as sql
 import pandas as pd
-import numpy as np
 
 class stats_utils:
     def today(tariff, region, direction="Import"):

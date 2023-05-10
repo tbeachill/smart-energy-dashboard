@@ -5,7 +5,6 @@ from datetime import date, datetime
 from dateutil.relativedelta import relativedelta
 from const import *
 from style import *
-import statsmodels
 
 class graph_utils():
     def addition(df, tariff, region):

@@ -1,7 +1,6 @@
 from dash import Dash, html, dcc
 from callbacks import get_callbacks
 from const import *
-from sql_utils import sql_utils as sql
 import dash_bootstrap_components as dbc
 from style import *
 
@@ -52,6 +51,8 @@ app.layout = html.Div([
     html.Div(id="tab-content")
 ])
 
+server = app.server
+
 # Run the app
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server()
