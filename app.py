@@ -30,7 +30,7 @@ dash_app.index_string = '''
 </html>
 '''
 
-get_callbacks(app)
+get_callbacks(dash_app)
 
 # App layout
 dash_app.layout = html.Div([
