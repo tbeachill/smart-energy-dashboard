@@ -2,3 +2,4 @@ dash
 sqlalchemy
 python-dotenv
 pandas
+dash-bootstrap-components
