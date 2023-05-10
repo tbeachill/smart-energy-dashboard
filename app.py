@@ -3,9 +3,11 @@ from callbacks import get_callbacks
 from const import *
 import dash_bootstrap_components as dbc
 from style import *
+from sql_utils import sql_utils as sql
 
 # Initialize the app
 dash_app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP], suppress_callback_exceptions=True)
+sql.connect()
 
 dash_app.index_string = '''
 <!DOCTYPE html>
