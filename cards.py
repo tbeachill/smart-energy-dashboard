@@ -47,7 +47,7 @@ class cards:
             title = "Current Gas Cost"
             contents = str(sql.query(f"SELECT unit_rate FROM GasImport WHERE tariff = '{tariff}' \
                                      AND region_code = '{region}' AND date = '{dt.get_period(tariff)}'")['unit_rate'][0]) + "p"
-        elif tariff == "G" or tariff == "I":
+        elif tariff in ['G', 'I', 'C']:
             title = "Fixed SEG Export"
             contents = "4.1p"
         else:
