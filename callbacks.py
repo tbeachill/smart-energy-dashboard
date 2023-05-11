@@ -89,7 +89,7 @@ def get_callbacks(app):
 
 
     @app.callback(
-        [Output("price-plot", "figure", allow_duplicate=True), Output("data-table", "data")],
+        [Output("price-plot", "figure"), Output("data-table", "data")],
         [Input("tabs", "value"), Input("region-dropdown", "value"), Input("type-radio", "value"),
          Input("date-picker", "start_date"), Input("date-picker", "end_date")],
          prevent_initial_call=True
@@ -107,11 +107,11 @@ def get_callbacks(app):
     @app.callback(
         Output("table-best", "data"),
         [Input("region-dropdown", "value"), Input("type-radio", "value"),
-         Input("best-dropdown", "value")],
+         Input("best-dropdown", "value"), Input("tabs", "value")],
          prevent_initial_call=True
     )
-    def get_best_time_agile(region, td, period):
-        if not region or period is str:
+    def get_best_time_agile(region, td, period, tab):
+        if not region or period not in range(0,13) or tab != 'A':
             raise PreventUpdate
             
         return s.best_time(td, region, period)
