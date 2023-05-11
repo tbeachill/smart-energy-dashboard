@@ -12,7 +12,9 @@ class cards:
             dbc.CardBody(
                 [
                     html.H4("Standing Charge", className="card-title"),
-                    html.H2(str(sql.query(f"SELECT cost FROM StandingCharges WHERE tariff = '{tariff}' AND region_code = '{region}' AND type = '{energy_type[0]}'")['cost'][0]) + "p", className="card-subtitle"),
+                    html.H2(str(sql.query(f"SELECT cost FROM StandingCharges WHERE tariff = '{tariff}' AND \
+                                          region_code = '{region}' AND type = '{energy_type[0]}'")['cost'][0]) + "p",
+                                          className="card-subtitle"),
                 ]
             ),
             style=card_style,
@@ -20,7 +22,7 @@ class cards:
 
         return card
 
-    def one(tariff, region, energy_type):
+    def one(tariff, region, energy_type="E"):
         if energy_type[0] == "E":
             table = "ElectricityImport"
         else:
@@ -30,7 +32,9 @@ class cards:
             dbc.CardBody(
                 [
                     html.H4("Current Import", className="card-title"),
-                    html.H2(str(sql.query(f"SELECT unit_rate FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND date = '{dt.get_period(tariff)}'")['unit_rate'][0]) + "p", className="card-subtitle"),
+                    html.H2(str(sql.query(f"SELECT unit_rate FROM {table} WHERE tariff = '{tariff}' AND \
+                                          region_code = '{region}' AND date = '{dt.get_period(tariff)}'")['unit_rate'][0]) +
+                                          "p", className="card-subtitle"),
                 ]
             ),
             style=card_style
@@ -41,13 +45,15 @@ class cards:
     def two(tariff, region):  
         if tariff == "T":
             title = "Current Gas Cost"
-            contents = str(sql.query(f"SELECT unit_rate FROM GasImport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date = '{dt.get_period(tariff)}'")['unit_rate'][0]) + "p"
+            contents = str(sql.query(f"SELECT unit_rate FROM GasImport WHERE tariff = '{tariff}' \
+                                     AND region_code = '{region}' AND date = '{dt.get_period(tariff)}'")['unit_rate'][0]) + "p"
         elif tariff == "G" or tariff == "I":
             title = "Fixed SEG Export"
             contents = "4.1p"
         else:
             title = "Current Export"
-            contents = str(sql.query(f"SELECT unit_rate FROM ElectricityExport WHERE tariff = '{tariff}' AND region_code = '{region}' AND date = '{dt.get_period(tariff)}'")['unit_rate'][0]) + "p"
+            contents = str(sql.query(f"SELECT unit_rate FROM ElectricityExport WHERE tariff = '{tariff}' AND \
+                                     region_code = '{region}' AND date = '{dt.get_period(tariff)}'")['unit_rate'][0]) + "p"
 
         card = dbc.Card(
             dbc.CardBody(
@@ -61,9 +67,7 @@ class cards:
 
         return card
     
-    def join(region, tariff):
-        if tariff == 'tab-1':
-            return
+    def join(tariff, region):
         join_card = dbc.Card(
             [
                 dbc.CardBody(

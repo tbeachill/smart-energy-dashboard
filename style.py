@@ -16,7 +16,8 @@ load_figure_template(templates)
 #"colorway": ["#6829ad", "#e14b56", "#06a843", "#f7c200", "#51a0f6"], "font": {"color": "#32fbe2", 
 
 # PLOTS
-dist_colors = ['#30123b', '#4145ab', '#4675ed', '#39a2fc', '#1bcfd4', '#24eca6', '#61fc6c', '#a4fc3b', '#d1e834', '#f3c63a', '#fe9b2d', '#f36315', '#d93806', '#b11901', '#7a0402']
+dist_colors = ['#30123b', '#4145ab', '#4675ed', '#39a2fc', '#1bcfd4', '#24eca6', '#61fc6c', '#a4fc3b',
+               '#d1e834', '#f3c63a', '#fe9b2d', '#f36315', '#d93806', '#b11901', '#7a0402']
 
 dist_plot_cmap = px.colors.sequential.Turbo
 

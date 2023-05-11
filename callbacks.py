@@ -1,351 +1,150 @@
-from dash import html, dash_table, dcc, Input, Output
+from dash import Input, Output
 from datetime import date
-import dash_bootstrap_components as dbc
 from dateutil.relativedelta import relativedelta
 from const import *
 from dash.exceptions import PreventUpdate
 from graph_utils import graph_utils as g
 from cards import cards
 from style import *
-from dash.dash_table.Format import Format, Group, Scheme, Symbol
 from stats_utils import stats_utils as s
 
 def get_callbacks(app):
-    
     @app.callback(
-            [Output("tariff-tabs", "children"), Output("intro", "hidden"), Output("intro2", "hidden")],
-            Input('region-dropdown', 'value'),
-            prevent_initial_call=True
+        [Output("tariff-tab-div", "hidden"), Output("intro", "hidden"),
+         Output("intro2", "hidden")],
+        Input("region-dropdown", "value")
     )
     def show_tabs(region):
-        return [[
-        dcc.Tab(label='Agile',       style=tab_style, selected_style=selected_tab_style, value='A', id='A'),
-        dcc.Tab(label='Tracker',     style=tab_style, selected_style=selected_tab_style, value='T', id='T'),
-        dcc.Tab(label='Go',          style=tab_style, selected_style=selected_tab_style, value='G', id='G'),
-        dcc.Tab(label='Cosy',        style=tab_style, selected_style=selected_tab_style, value='C', id='C'),
-        dcc.Tab(label='Flux',        style=tab_style, selected_style=selected_tab_style, value='F', id='F'),
-        dcc.Tab(label='Intelligent', style=tab_style, selected_style=selected_tab_style, value='I', id='I'),
-    ], True, True]
-    
-    @app.callback(Output('card-row', 'children'),
-                [Input('tariff-tabs', 'value'), Input("region-dropdown", "value")], prevent_initial_call=True)
-    def render_cards(tab, region):
-        if not region or not tab:
+        if not region:
             raise PreventUpdate
         
-        if tab != 'C' and tab != 'T':    
-            return dbc.Row([dbc.Col(dbc.Card(id='join-card')), dbc.Col(dbc.Card(id='sc-card')), dbc.Col(dbc.Card(id='current-price-1')), dbc.Col(dbc.Card(id='current-price-2'))])
-        else:
-            return dbc.Row([dbc.Col(dbc.Card(id='join-card')), dbc.Col(dbc.Card(id='sc-card')), dbc.Col(dbc.Card(id='current-price-1'))])
-        
-    # display content for each tab once selected
-    @app.callback(Output('tab-content', 'children'),
-                [Input('tariff-tabs', 'value'), Input("region-dropdown", "value")])
-    def render_content(tab, region):
-        if tab == 'A':
-            return html.Div([
-                            dash_table.DataTable(id='table-stats-today', style_header=table_style_header, style_data=table_style_data, style_as_list_view=True),
-                            dbc.Row([
-                                dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),                        
-                                dbc.Col(dcc.DatePickerRange(
-                                    id='datepicker1',
-                                    display_format='DD/MM/YYYY',
-                                    min_date_allowed=date(2022, 12, 1),
-                                    max_date_allowed=date(date.today().year, date.today().month, date.today().day),
-                                    initial_visible_month=date(date.today().year, date.today().month, 1),
-                                    start_date=date.today() - relativedelta(days=1),
-                                    end_date=date.today() + relativedelta(days=2),
-                                    style=date_picker_style
-                                ), width=6),
-                                dbc.Col(dcc.RadioItems(['Import', 'Export'], 'Import', id='impex', inline=True, style=radio_style, inputStyle=radio_input_style), width=6)], justify='between'),
-                            dcc.Graph(id='im-ex'),
-                            dbc.Row([dbc.Col(html.Div(children='Select a time period to find the cheapest import or highest export period (import or export are selected at the top-right)', style=title_style))]),
-                            dbc.Row([dbc.Col(dcc.Dropdown([{'label': '0:30', 'value': 1}, {'label': '1:00', 'value': 2}, {'label': '1:30', 'value': 3}, {'label': '2:00', 'value': 4}, {'label': '2:30', 'value': 5}, {'label': '3:00', 'value': 6}, {'label': '3:30', 'value': 7}, {'label': '4:00', 'value': 8}, {'label': '4:30', 'value': 9}, {'label': '5:00', 'value': 10}, {'label': '5:30', 'value': 11}, {'label': '6:00', 'value': 12}, ], '0:30', id='cheapest-dropdown', style=date_picker_style)),
-                                     dbc.Col(width=1),
-                                     dbc.Col(dash_table.DataTable(id='table-cheapest', style_header=table_style_header, style_data=table_style_data, style_cell=table_style_cell_cheapest)),
-                                     dbc.Col(width=1)]),
-                            dcc.Graph(id='agile-dist'),
-                            dash_table.DataTable(id='table-a-dist', style_header=table_style_header, style_data=table_style_data),
-                            dcc.Graph(id='box-a'),
-                            dbc.Row([dbc.Col(),
-                                     dbc.Col(dash_table.DataTable(id='table-a', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True, css=[{"selector": ".show-hide", "rule": "display: none"}])),
-                                     dbc.Col()]),
-                            html.Div("This website was created by a satisfied customer and is not affiliated with Octopus Energy.", style=text_style)
-                            ])
-        if tab == 'T':
-            return html.Div([
-                            dbc.Row([
-                                dbc.Col(dcc.DatePickerRange(
-                                    id='datepicker2',
-                                    display_format='DD/MM/YYYY',
-                                    min_date_allowed=date(2022, 12, 1),
-                                    max_date_allowed=date(date.today().year, date.today().month, date.today().day),
-                                    initial_visible_month=date(date.today().year, date.today().month, 1),
-                                    start_date=date.today() - relativedelta(months=1),
-                                    end_date=date.today() + relativedelta(days=2),
-                                    style=date_picker_style
-                                ), width=6),
-                                dbc.Col(dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style=radio_style, inputStyle=radio_input_style), width=6)], justify='between'),
-                            dcc.Graph(id='gas-elec'),
-                            dcc.Graph(id='tracker-dist'),
-                            dash_table.DataTable(id='table-t-dist', style_header=table_style_header, style_data=table_style_data),
-                            dcc.Graph(id='box-t'),
-                            dbc.Row([dbc.Col(),
-                                     dbc.Col(dash_table.DataTable(id='table-t', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True, css=[{"selector": ".show-hide", "rule": "display: none"}])),
-                                     dbc.Col()]),
-                            html.Div("This website was created by a satisfied customer and is not affiliated with Octopus Energy.", style=text_style)
-                            ])
-        if tab == 'G':
-            return html.Div([
-                            dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),
-                            dcc.DatePickerRange(
-                                id='datepicker3',
-                                display_format='DD/MM/YYYY',
-                                min_date_allowed=date(2022, 12, 1),
-                                max_date_allowed=date(date.today().year, date.today().month, date.today().day),
-                                initial_visible_month=date(date.today().year, date.today().month, 1),
-                                start_date=date.today() - relativedelta(days=1),
-                                end_date=date.today() + relativedelta(days=2),
-                                style=date_picker_style
-                            ),
-                            dcc.Graph(id='im-ex-g'),
-                            dbc.Row([dbc.Col(),
-                                     dbc.Col(dash_table.DataTable(id='table-g', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True, css=[{"selector": ".show-hide", "rule": "display: none"}])),
-                                     dbc.Col()]),
-                            html.Div("This website was created by a satisfied customer and is not affiliated with Octopus Energy.", style=text_style)
-                            ])
-        if tab == 'C':
-            return html.Div([
-                            dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),
-                            dcc.DatePickerRange(
-                                id='datepicker4',
-                                display_format='DD/MM/YYYY',
-                                min_date_allowed=date(2022, 12, 1),
-                                max_date_allowed=date(date.today().year, date.today().month, date.today().day),
-                                initial_visible_month=date(date.today().year, date.today().month, 1),
-                                start_date=date.today() - relativedelta(days=1),
-                                end_date=date.today() + relativedelta(days=2),
-                                style=date_picker_style
-                            ),
-                            dcc.Graph(id='im-ex-c'),
-                            dbc.Row([dbc.Col(),
-                                     dbc.Col(dash_table.DataTable(id='table-c', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True, css=[{"selector": ".show-hide", "rule": "display: none"}])),
-                                     dbc.Col()]),
-                            html.Div("This website was created by a satisfied customer and is not affiliated with Octopus Energy.", style=text_style)
-                            ])
-        if tab == 'F':
-            return html.Div([
-                            dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),
-                            dbc.Row([
-                                    dbc.Col(dcc.DatePickerRange(
-                                        id='datepicker5',
-                                        display_format='DD/MM/YYYY',
-                                        min_date_allowed=date(2022, 12, 1),
-                                        max_date_allowed=date(date.today().year, date.today().month, date.today().day),
-                                        initial_visible_month=date(date.today().year, date.today().month, 1),
-                                        start_date=date.today() - relativedelta(days=1),
-                                        end_date=date.today() + relativedelta(days=2),
-                                        style=date_picker_style
-                                    ), width=6),
-                                    dbc.Col(dcc.RadioItems(['Import', 'Export'], 'Import', id='impex-2', inline=True, style=radio_style, inputStyle=radio_input_style), width=6)
-                            ], justify="between"),
-                            dcc.Graph(id='im-ex-f'),
-                            dbc.Row([dbc.Col(),
-                                     dbc.Col(dash_table.DataTable(id='table-f', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True, css=[{"selector": ".show-hide", "rule": "display: none"}])),
-                                     dbc.Col()]),
-                            html.Div("This website was created by a satisfied customer and is not affiliated with Octopus Energy.", style=text_style)
-                            ])
-        if tab == 'I':
-            return html.Div([
-                            dcc.RadioItems(['Electricity', 'Gas'], 'Electricity', id='energy-type', inline=True, style={'display': 'none'}),
-                            dcc.DatePickerRange(
-                                id='datepicker6',
-                                display_format='DD/MM/YYYY',
-                                min_date_allowed=date(2022, 12, 1),
-                                max_date_allowed=date(date.today().year, date.today().month, date.today().day),
-                                initial_visible_month=date(date.today().year, date.today().month, 1),
-                                start_date=date.today() - relativedelta(days=1),
-                                end_date=date.today() + relativedelta(days=2),
-                                style=date_picker_style
-                            ),
-                            dcc.Graph(id='im-ex-i'),
-                            dbc.Row([dbc.Col(),
-                                     dbc.Col(dash_table.DataTable(id='table-i', hidden_columns=['legend'], style_data=table_style_data, style_data_conditional=table_style_data_conditional, style_header=table_style_header, style_header_conditional=table_style_header_conditional, style_cell=table_style_cell, style_cell_conditional=table_style_cell_conditional, style_as_list_view=True, css=[{"selector": ".show-hide", "rule": "display: none"}])),
-                                     dbc.Col()]),
-                            html.Div("This website was created by a satisfied customer and is not affiliated with Octopus Energy.", style=text_style)
-                            ])
+        return [False, True, True]
+    
 
-
-    # standing charge card to update with tariff and region
     @app.callback(
-        Output("sc-card", "children"),
-        [Input("region-dropdown", "value"), Input("tariff-tabs", "value"), Input("energy-type", "value")],
+        [Output("card-row-div", "hidden"), Output("card-2", "hidden"), 
+         Output("stats-today-tab-div", "hidden"), Output("date-direction-div", "hidden"),
+         Output("date-picker-div", "hidden"), Output("date-picker", "start_date"),
+         Output("date-picker", "end_date"),
+         Output("price-plot-div", "hidden"), Output("price-calculator-title-div", "hidden"),
+         Output("price-calculator-div", "hidden"), Output("dist-plot-div", "hidden"),
+         Output("dist-tab-div", "hidden"), Output("box-plot-div", "hidden"),
+         Output("data-tab-div", "hidden"), Output("type-radio-div", "hidden"),
+         Output("type-radio", "options"), Output("type-radio", "value")],
+        [Input("tabs", "value"), Input("region-dropdown", "value")],
         prevent_initial_call=True
     )
-    def update_options(region, tariff, energy_type):
-        if not region:
+    def switch_tab(tab, region):
+        if not tab or not region or tab == "tab-1":
             raise PreventUpdate
         
-        global tabs_disabled
-        tabs_disabled = False
+        T, F = True, False
+        if tab != 'T':
+            start = date.today() - relativedelta(days=1)
+            end = date.today() + relativedelta(days=2)
+        else:
+            start = date.today() - relativedelta(months=1)
+            end = date.today() + relativedelta(days=2)
+        
+        if tab == 'A':
+            return [F, F, F, F, F, start, end, F, F, F, F, F, F, F, F, ["Import", "Export"], "Import"]
+        elif tab == 'T':
+            return [F, T, T, F, F, start, end, F, T, T, F, F, F, F, F, ["Electricity", "Gas"], "Electricity"]
+        elif tab == 'F':
+            return [F, F, T, F, T, start, end, F, T, T, T, T, T, F, F, ["Import", "Export"], "Import"]
+        elif tab == 'C':
+            return [F, T, T, F, T, start, end, F, T, T, T, T, T, F, T, ["Import", "Export"], "Import"]
+        else:
+            return [F, F, T, F, T, start, end, F, T, T, T, T, T, F, T, ["Import", "Export"], "Import"]
 
-        return cards.sc(tariff, region, energy_type)
 
-    # current price card
     @app.callback(
-        Output("current-price-1", "children"),
-        [Input("region-dropdown", "value"), Input("tariff-tabs", "value"), Input("energy-type", "value")]
+        [Output("join-card", "children"), Output("sc-card", "children"),
+         Output("card-1", "children"), Output("card-2", "children")],
+        [Input("tabs", "value"), Input("region-dropdown", "value"), Input("type-radio", "value")],
+         prevent_initial_call=True
     )
-    def card_one(region, tariff, energy_type):
-        if not region or not tariff:
-            raise PreventUpdate
-
-        return cards.one(tariff, region, energy_type)
-
-    # card 3
-    @app.callback(
-        Output("current-price-2", "children"),
-        [Input("region-dropdown", "value"), Input("tariff-tabs", "value")]
-    )
-    def card_two(region, tariff):
-        if not region or not tariff:
+    def get_card_data(tariff, region, td):
+        if not region or not tariff or tariff == "tab-1":
             raise PreventUpdate
         
-        return cards.two(tariff, region)
+        if tariff == 'T':
+            return [cards.join(tariff, region), cards.sc(tariff, region, td),
+                    cards.one(tariff, region, td), cards.two(tariff, region)]
+        else:
+            return [cards.join(tariff, region), cards.sc(tariff, region),
+                    cards.one(tariff, region), cards.two(tariff, region)]
+        
+
+    @app.callback(
+        Output("agile-stats-today", "data"),
+        [Input("tabs", "value"), Input("region-dropdown", "value"), Input("type-radio", "value")],
+         prevent_initial_call=True
+    )
+    def agile_today_stats(tariff, region, td):
+        if not region or tariff != 'A' or tariff == "tab-1":
+            raise PreventUpdate
+        
+        return s.today(tariff, region, td)
+
+
+    @app.callback(
+        [Output("price-plot", "figure", allow_duplicate=True), Output("data-table", "data")],
+        [Input("tabs", "value"), Input("region-dropdown", "value"), Input("type-radio", "value"),
+         Input("date-picker", "start_date"), Input("date-picker", "end_date")],
+         prevent_initial_call=True
+    )
+    def get_price_data(tariff, region, td, start, end):
+        if not region or not tariff or tariff == "tab-1":
+            raise PreventUpdate
+        
+        if td in ["Gas", "Electricity"]:
+            return g.price(tariff, region, start, end, energy_type=td)
+        else:
+            return g.price(tariff, region, start, end, direction=td)
     
-    @app.callback(
-            Output("join-card", "children"),
-            [Input("region-dropdown", "value"), Input("tariff-tabs", "value")]
-    )
-    def join_card(region, tariff):
-        if not region or not tariff:
-            raise PreventUpdate
-        
-        return cards.join(region, tariff)
 
-
-    # return import or export graph based on selection
     @app.callback(
-        [Output("im-ex", "figure"), Output("table-a", "data")],
-        [Input("impex", "value"), Input("region-dropdown", "value"), Input("tariff-tabs", "value"), Input("datepicker1", "start_date"), Input("datepicker1", "end_date")]
+        Output("table-best", "data"),
+        [Input("region-dropdown", "value"), Input("type-radio", "value"),
+         Input("best-dropdown", "value")],
+         prevent_initial_call=True
     )
-    def change_impex(value, region, tariff, start_date, end_date):
-        if not region or not tariff:
+    def get_best_time_agile(region, td, period):
+        if not region or period is str:
             raise PreventUpdate
-        
-        return g.price(tariff, region, start_date, end_date, value)
+            
+        return s.best_time(td, region, period)
     
-    @app.callback(
-            Output("table-cheapest", "data"),
-            [Input("impex", "value"), Input("region-dropdown", "value"), Input("cheapest-dropdown", "value")]
-    )
-    def get_cheapest(direction, region, period):
-        if not region:
-            raise PreventUpdate
-        
-        return s.cheapest_time(direction, region, period)
-    
-    @app.callback(
-        Output("table-stats-today", "data"),
-        [Input("impex", "value"), Input("region-dropdown", "value"), Input("tariff-tabs", "value")]
-    )
-    def stats_today(direction, region, tariff):
-        return s.today(tariff, region, direction)
-    
-    @app.callback(
-        Output("box-a", "figure"),
-        [Input("impex", "value"), Input("region-dropdown", "value"), Input("tariff-tabs", "value")]
-    )
-    def box_plot_a(direction, region, tariff):
-        if not region or not tariff:
-            raise PreventUpdate
-        
-        return g.box_6m(tariff, region, direction=direction)
-    
-    @app.callback(
-        Output("box-t", "figure"),
-        [Input("energy-type", "value"), Input("region-dropdown", "value"), Input("tariff-tabs", "value")]
-    )
-    def box_plot_t(energy_type, region, tariff):
-        if not region or not tariff:
-            raise PreventUpdate
-        
-        return g.box_6m(tariff, region, energy_type=energy_type)
-        
-    # return import or export FLUX graph based on selection
-    @app.callback(
-        [Output("im-ex-f", "figure"), Output("table-f", "data")],
-        [Input("impex-2", "value"), Input("region-dropdown", "value"), Input("tariff-tabs", "value"), Input("datepicker5", "start_date"), Input("datepicker5", "end_date")]
-    )
-    def change_impex(value, region, tariff, start_date, end_date):
-        if not region or not tariff:
-            raise PreventUpdate
-        
-        return g.price(tariff, region, start_date, end_date, value)
-        
-        
-    # return go import graph
-    @app.callback(
-        [Output("im-ex-g", "figure"), Output("table-g", "data")],
-        [Input("region-dropdown", "value"), Input("tariff-tabs", "value"), Input("datepicker3", "start_date"), Input("datepicker3", "end_date")]
-    )
-    def change_impex(region, tariff, start_date, end_date):
-        if not region or not tariff:
-            raise PreventUpdate
-        
-        return g.price(tariff, region, start_date, end_date)
 
-    # return cosy import graph
     @app.callback(
-        [Output("im-ex-c", "figure"), Output("table-c", "data")],
-        [Input("region-dropdown", "value"), Input("tariff-tabs", "value"), Input("datepicker4", "start_date"), Input("datepicker4", "end_date")]
+        [Output("dist-plot", "figure"), Output("dist-table", "data")],
+        [Input("tabs", "value"), Input("region-dropdown", "value"), Input("type-radio", "value"),
+         Input("date-picker", "start_date"), Input("date-picker", "end_date")],
+         prevent_initial_call=True
     )
-    def change_impex(region, tariff, start_date, end_date):
-        if not region or not tariff:
+    def get_dist_data(tariff, region, td, start, end):
+        if not region or tariff == "tab-1" or tariff not in ['A', 'T']:
             raise PreventUpdate
+            
+        if tariff == 'A':
+            return g.dist(tariff, region, start, end, direction=td)
+        else:
+            return g.dist(tariff, region, start, end, energy_type=td)
         
-        return g.price(tariff, region, start_date, end_date)
 
-    # return intelligent import graph
     @app.callback(
-        [Output("im-ex-i", "figure"), Output("table-i", "data")],
-        [Input("region-dropdown", "value"), Input("tariff-tabs", "value"), Input("datepicker6", "start_date"), Input("datepicker6", "end_date")]
+        Output("box-plot", "figure"),
+        [Input("tabs", "value"), Input("region-dropdown", "value"),
+         Input("type-radio", "value")],
+         prevent_initial_call=True
     )
-    def change_impex(region, tariff, start_date, end_date):
-        if not region or not tariff:
+    def get_box_data(tariff, region, td):
+        if not region or tariff == "tab-1" or tariff not in ['A', 'T']:
             raise PreventUpdate
+            
+        if tariff == 'A':
+            return g.box_6m(tariff, region, direction=td)
+        else:
+            return g.box_6m(tariff, region, energy_type=td)
         
-        return g.price(tariff, region, start_date, end_date)
-
-    # return agile distribution graph based on date selection
-    @app.callback(
-        [Output("agile-dist", "figure"), Output("table-a-dist", "data")],
-        [Input("impex", "value"), Input("region-dropdown", "value"), Input("datepicker1", "start_date"), Input("datepicker1", "end_date"), Input("tariff-tabs", "value")]
-    )
-    def change_distribution(direction, region, start_date, end_date, tariff):
-        if not region or not tariff:
-            raise PreventUpdate
-        
-        return g.dist(tariff, region, start_date, end_date, direction=direction)
-        
-    # return tracker gas or electric graph based on selection
-    @app.callback(
-        [Output("gas-elec", "figure"), Output("table-t", "data")],
-        [Input("energy-type", "value"), Input("region-dropdown", "value"), Input("tariff-tabs", "value"), Input("datepicker2", "start_date"), Input("datepicker2", "end_date")]
-    )
-    def change_energy(energy_type, region, tariff, start_date, end_date):
-        if not region or not tariff:
-            raise PreventUpdate
-        
-        return g.price(tariff, region, start_date, end_date, type=energy_type)
-
-    # return tracker distribution graph based on date selection
-    @app.callback(
-        [Output("tracker-dist", "figure"), Output("table-t-dist", "data")],
-        [Input("energy-type", "value"), Input("region-dropdown", "value"), Input("datepicker2", "start_date"), Input("datepicker2", "end_date"), Input("tariff-tabs", "value")]
-    )
-    def change_distribution(energy_type, region, start_date, end_date, tariff):
-        if not region or not tariff:
-            raise PreventUpdate
-        
-        return g.dist(tariff, region, start_date, end_date, type=energy_type)

@@ -16,7 +16,7 @@ class graph_utils():
 
         return df
     
-    def price(tariff, region, start_date, end_date, direction="Import", type="Electricity"):
+    def price(tariff, region, start_date, end_date, direction="Import", energy_type="Electricity"):
         if direction == "Import":
             hline = sql.query(f"SELECT unit_rate FROM ElectricityImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0]
             table = "ElectricityImport"
@@ -24,7 +24,7 @@ class graph_utils():
             hline = 15
             table = "ElectricityExport"
 
-        if type == "Gas":
+        if energy_type == "Gas":
             hline = sql.query(f"SELECT unit_rate FROM GasImport WHERE tariff = 'V' AND region_code = '{region}'")['unit_rate'][0]
             table = "GasImport"
 
@@ -33,7 +33,8 @@ class graph_utils():
         else:
             t_convert = True
 
-        df = sql.query(f"SELECT * FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'", t_convert=t_convert)
+        df = sql.query(f"SELECT * FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND \
+                       date >= '{start_date}' AND date <= '{end_date}'", t_convert=t_convert)
         df.rename({'date': 'Date', 'unit_rate': 'Unit Rate (p/KWh)'}, axis=1, inplace=True)
 
         if tariff == "T" or tariff == "G":
@@ -48,7 +49,8 @@ class graph_utils():
         else:
             figure.add_hline(y=hline, line_color='yellow', opacity=0.7, line_dash="dash", annotation_text="standard variable unit rate")
             
-        figure.add_vline(datetime.now().timestamp() * 1000, line_color='green', opacity=0.7, annotation_text="current time", annotation_position='bottom right')
+        figure.add_vline(datetime.now().timestamp() * 1000, line_color='green', opacity=0.7,
+                         annotation_text="current time", annotation_position='bottom right')
 
         if tariff == "T" or tariff == "G":
             df = df[:-1]
@@ -59,8 +61,8 @@ class graph_utils():
 
         return [figure, df[['Date', 'Unit Rate (p/KWh)', 'legend']].to_dict('records')]
     
-    def dist(tariff, region, start_date, end_date, direction="Import", type="Electricity"):
-        if type == "Electricity":
+    def dist(tariff, region, start_date, end_date, direction="Import", energy_type="Electricity"):
+        if energy_type == "Electricity":
             if direction == "Import":
                 bins = [-100,0,3,5,7,10,15,20,25,30,35,40,50,100]
                 labels = ['<0p', '<3p', '<5p', '<7p', '<10p', '<15p', '<20p', '<25p', '<30p', '<35p', '<40p', '<50p', '>50p']
@@ -74,19 +76,21 @@ class graph_utils():
             labels = ['<2p', '<4p', '<6p', '<8p', '<10p', '<12p', '<14p', '<16p', '<18p', '<20p', '<22p', '>22p']
             table = "GasImport"
 
-        df = sql.query(f"SELECT * FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'")
+        df = sql.query(f"SELECT * FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND \
+                       date >= '{start_date}' AND date <= '{end_date}'")
 
         groups = df.groupby(pd.cut(df.unit_rate, bins, labels=labels))
         group_df = pd.DataFrame(groups.unit_rate.count())
         group_df.columns = ['Count']
         group_df['Unit Rate (p/KWh)'] = labels
         
-        figure=px.bar(group_df, x='Unit Rate (p/KWh)', y='Count', color='Unit Rate (p/KWh)', color_discrete_sequence=dist_plot_cmap, template=template,
+        figure=px.bar(group_df, x='Unit Rate (p/KWh)', y='Count', color='Unit Rate (p/KWh)',
+                      color_discrete_sequence=dist_plot_cmap, template=template,
                       title=f"Plot showing the distribution of costs over the selected time period")
 
         return [figure, group_df[['Count']].T.to_dict('records')]
     
-    def box(tariff, region, start_date, end_date, direction="Import", type="Electricity"):
+    def box(tariff, region, start_date, end_date, direction="Import", energy_type="Electricity"):
         # plot boxes based on the selected date range
         if direction == "Import":
             table = "ElectricityImport"
@@ -95,7 +99,8 @@ class graph_utils():
             table = "ElectricityExport"
             hline = 15
 
-        df = sql.query(f"SELECT * FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{start_date}' AND date <= '{end_date}'")
+        df = sql.query(f"SELECT * FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND \
+                       date >= '{start_date}' AND date <= '{end_date}'")
         df.rename({'date': 'Date', 'unit_rate': 'Unit Rate (p/KWh)'}, axis=1, inplace=True)
         df['Date'] = df['Date'].dt.strftime('%d-%m-%Y')
         df['Date'] = pd.to_datetime(df['Date'], dayfirst=True)

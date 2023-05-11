@@ -25,7 +25,8 @@ class dt_utils:
     
     def period_30m():
         dt_now = datetime.now()
-        return dt_now - relativedelta(hours=1, minutes=(dt_now.minute % 30), seconds=dt_now.second, microseconds=dt_now.microsecond)
+        return dt_now - relativedelta(hours=1, minutes=(dt_now.minute % 30),
+                                      seconds=dt_now.second, microseconds=dt_now.microsecond)
     
     def period_go():
         dt_now, dt_yday = dt_utils.get_times()
@@ -41,7 +42,9 @@ class dt_utils:
     def period_cosy():
         dt_now, dt_yday = dt_utils.get_times()
     
-        times = [datetime.strptime('03:00', "%H:%M").time(), datetime.strptime('06:00', "%H:%M").time(), datetime.strptime('12:00', "%H:%M").time(), datetime.strptime('15:00', "%H:%M").time(), datetime.strptime('18:00', "%H:%M").time()]
+        times = [datetime.strptime('03:00', "%H:%M").time(), datetime.strptime('06:00', "%H:%M").time(),
+                 datetime.strptime('12:00', "%H:%M").time(), datetime.strptime('15:00', "%H:%M").time(),
+                 datetime.strptime('18:00', "%H:%M").time()]
         if dt_now.time() < times[0]:
             return datetime(dt_yday.year, dt_yday.month, dt_yday.day, 18, 0, 0)
         elif dt_now.time() < times[1]:
@@ -58,7 +61,8 @@ class dt_utils:
     def period_flux():
         dt_now, dt_yday = dt_utils.get_times()
     
-        times = [datetime.strptime('01:00', "%H:%M").time(), datetime.strptime('04:00', "%H:%M").time(), datetime.strptime('15:00', "%H:%M").time(), datetime.strptime('18:00', "%H:%M").time()]
+        times = [datetime.strptime('01:00', "%H:%M").time(), datetime.strptime('04:00', "%H:%M").time(),
+                 datetime.strptime('15:00', "%H:%M").time(), datetime.strptime('18:00', "%H:%M").time()]
         if dt_now.time() < times[0]:
             return datetime(dt_yday.year, dt_yday.month, dt_yday.day, 18, 0, 0)
         elif dt_now.time() < times[1]:

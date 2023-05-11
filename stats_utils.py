@@ -23,14 +23,15 @@ class stats_utils:
 
         return df_all.to_dict('records')
     
-    def cheapest_time(direction, region, period):
+    def best_time(direction, region, period):
         # find the time period with the cheapest average unit cost or highest for export
         if direction == "Import":
             table = "ElectricityImport"
         else:
             table = "ElectricityExport"
 
-        df = sql.query(f"SELECT * FROM {table} WHERE tariff = 'A' AND region_code = '{region}' AND date >= '{datetime.now()}'")
+        df = sql.query(f"SELECT * FROM {table} WHERE tariff = 'A' AND region_code = '{region}' AND \
+                       date >= '{datetime.now()}'")
         i = 0
         j = period
 
@@ -55,7 +56,8 @@ class stats_utils:
 
         end = df[i_:j_]['date'].max() + relativedelta(minutes=30)
 
-        df2 = pd.DataFrame([df[i_:j_]['date'].min().strftime('%d-%m-%Y %H:%M'), end.strftime('%d-%m-%Y %H:%M'), round(average, 2)]).T
+        df2 = pd.DataFrame([df[i_:j_]['date'].min().strftime('%d-%m-%Y %H:%M'), end.strftime('%d-%m-%Y %H:%M'),
+                            round(average, 2)]).T
         df2.columns = ['Start time', 'End time', 'Average unit rate (p/KWh)']
         
         return df2.to_dict('records')
