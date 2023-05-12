@@ -13,7 +13,7 @@ class dt_utils:
             case "A":
                 return dt_utils.period_30m()
             case "T":
-                return datetime.now().date()
+                return datetime.utcnow().date()
             case "G":
                 return dt_utils.period_go()
             case "C":

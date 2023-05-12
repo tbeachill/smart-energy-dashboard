@@ -12,7 +12,7 @@ class stats_utils:
 
         df = sql.query(f"SELECT * FROM {table} WHERE tariff = '{tariff}' AND region_code = '{region}' AND date >= '{date.today()}'")
 
-        df_all = pd.DataFrame([round(df['unit_rate'].mean(), 2), df['unit_rate'].median(), df['unit_rate'].min(), df['unit_rate'].max()])
+        df_all = pd.DataFrame([round(df['unit_rate'].mean(), 2), round(df['unit_rate'].median(), 2), df['unit_rate'].min(), df['unit_rate'].max()])
         df_all.columns=["Today's Stats (p/KWh)"]
         df_all = df_all.T
         df_all = df_all.reset_index()
