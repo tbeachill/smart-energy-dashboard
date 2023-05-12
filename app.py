@@ -56,7 +56,8 @@ dash_app.layout = html.Div([
         r_codes,
         id='region-dropdown',
         placeholder='REGION',
-        searchable=False
+        searchable=False,
+        style=dropdown_style_
     ),
     
     # tabs
@@ -118,7 +119,8 @@ dash_app.layout = html.Div([
                                             style=period_style)),
                 dbc.Col(width=1),
                 dbc.Col(dash_table.DataTable(id='table-best', style_header=table_style_header,
-                                             style_data=table_style_data, style_cell=table_style_cell_cheapest)),
+                                             style_data=table_style_data, style_cell=table_style_cell_cheapest,
+                                             style_cell_conditional=table_style_cell_conditional)),
                 dbc.Col(width=1)])]), style=calc_card_style), hidden=True, id='price-calculator-div'),
     
     # distribution
@@ -144,4 +146,4 @@ app = dash_app.server
 
 # Run the app
 if __name__ == '__main__':
-    dash_app.run(host='0.0.0.0', port='8000', debug=True)
+    dash_app.run(host='0.0.0.0', port='8000', debug=False)

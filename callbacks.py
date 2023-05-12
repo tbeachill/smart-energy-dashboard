@@ -19,8 +19,10 @@ def get_callbacks(app):
 
         if len(paths) > 1:
             return [paths[0], p_codes[paths[1]]]
-        else:
+        elif len(paths) == 1:
             return [paths[0], dash.no_update]
+        else:
+            return [dash.no_update, dash.no_update]
         
 
     @app.server.route('/robots.txt')

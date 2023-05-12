@@ -42,7 +42,7 @@ intro_text = [html.H1("Smart Energy Dashboard"),
               ]
 
 intro_text_2 = [
-              html.P("Smart tariffs can save you money if you are able to move you energy usage outside of certain times, all you need is a smart meter. This website will allow you to view the different smart tariffs offered by Octopus Energy and compare the prices over time.\nAn overview of the different smart tariffs are below.", style={'font-size':'16px', 'color':'white', 'font-weight': 'bold'}),
+              html.P("Smart tariffs can save you money if you are able to move you energy usage outside of certain times, all you need is a smart meter. This website will allow you to view the different smart tariffs offered by Octopus Energy and compare the prices over time.\nAn overview of the different smart tariffs are below.", style={'font-size':'18px', 'color':'white'}),
               html.Br(),
               html.H5("Agile Octopus"),
               html.P("With Agile Octopus, you get access to half-hourly energy prices, tied to wholesale prices and updated daily. So when wholesale electricity prices drop, your bills can too particularly if you can shift your daily electricity use outside of peak times.", style={'font-size':'16px', 'color':'white'}),

@@ -113,6 +113,7 @@ date_picker_style = {
 period_style = {
     "margin-left": "50px",
     "margin-top": "10px",
+    'color':'black',
 }
 
 # TABLES
@@ -140,6 +141,14 @@ table_style_cell = {
 table_style_cell_conditional = [
     {
         'if': {'column_id': 'Date'},
+        'textAlign': 'left'
+    },
+    {
+        'if': {'column_id': 'Start time'},
+        'textAlign': 'left'
+    },
+    {
+        'if': {'column_id': 'End time'},
         'textAlign': 'left'
     },
 ]
@@ -175,13 +184,18 @@ text_style = {
             }
 
 dropdown_style = {
-    'color':'white',
+    'color':'black',
     'font-size': '20px',
     'padding':'6px',
     'padding-right':'10px',
 }
 
+dropdown_style_ = {
+    'color':'black',
+}
+
 table_style_cell_cheapest = {
     'padding-left':'25px',
+    'padding-right':'25px',
     'margin-right': '250px'
 }
