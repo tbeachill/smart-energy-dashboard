@@ -1,4 +1,4 @@
-from dash import Input, Output
+from dash import Input, Output, dash
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from const import *
@@ -7,18 +7,54 @@ from graph_utils import graph_utils as g
 from cards import cards
 from style import *
 from stats_utils import stats_utils as s
+from flask import request, send_from_directory
 
 def get_callbacks(app):
     @app.callback(
+            [Output("region-dropdown", "value"), Output("tabs", "value")],
+            Input("url", "pathname")
+    )
+    def display_page(pathname):
+        paths = [x for x in pathname.split('/') if x]
+
+        if len(paths) > 1:
+            return [paths[0], p_codes[paths[1]]]
+        elif len(paths) == 1:
+            return [paths[0], dash.no_update]
+        else:
+            return [dash.no_update, dash.no_update]
+        
+
+    @app.server.route('/robots.txt')
+    @app.server.route('/sitemap.xml')
+    def static_from_root():
+        return send_from_directory(app.server.static_folder, request.path[1:])
+
+
+    @app.callback(
+        Output("url", "pathname"),
+        [Input("region-dropdown", "value"), Input("tabs", "value")]
+    )
+    def update_url(region, tariff):
+        if not region:
+            raise PreventUpdate
+        
+        if tariff == "tab-1":
+            return "/" + region
+        else:
+            return f"/{region}/{p_codes_r[tariff]}"
+    
+
+    @app.callback(
         [Output("tariff-tab-div", "hidden"), Output("intro", "hidden"),
-         Output("intro2", "hidden")],
+         Output("intro2", "hidden"), Output("intro-card", "hidden")],
         Input("region-dropdown", "value")
     )
     def show_tabs(region):
         if not region:
             raise PreventUpdate
         
-        return [False, True, True]
+        return [False, True, True, True]
     
 
     @app.callback(
@@ -54,6 +90,8 @@ def get_callbacks(app):
             return [F, F, T, F, T, start, end, F, T, T, T, T, T, F, F, ["Import", "Export"], "Import"]
         elif tab == 'C':
             return [F, T, T, F, T, start, end, F, T, T, T, T, T, F, T, ["Import", "Export"], "Import"]
+        elif tab == 'G':
+            return [F, F, T, F, T, start, end, F, T, T, T, T, T, F, T, ["Import", "Export"], "Import"]
         else:
             return [F, F, T, F, T, start, end, F, T, T, T, T, T, F, T, ["Import", "Export"], "Import"]
 

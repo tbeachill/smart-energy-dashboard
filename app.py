@@ -23,6 +23,15 @@ dash_app.index_string = '''
         {%favicon%}
         {%css%}
     </head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T2N3JJ6FLT"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-T2N3JJ6FLT');
+    </script>
     <body>
         {%app_entry%}
         <footer>
@@ -38,6 +47,7 @@ get_callbacks(dash_app)
 
 # App layout
 dash_app.layout = html.Div([
+    dcc.Location(id="url", refresh=False),
     html.Div(children='Smart Energy Dashboard', style={
             'textAlign': 'center',
             'color': colors['text']
@@ -46,7 +56,8 @@ dash_app.layout = html.Div([
         r_codes,
         id='region-dropdown',
         placeholder='REGION',
-        searchable=False
+        searchable=False,
+        style=dropdown_style_
     ),
     
     # tabs
@@ -61,8 +72,9 @@ dash_app.layout = html.Div([
     
     # intro
     html.H2(id="intro", hidden=False, children=intro_text, style={'color': colors['text'], 'textAlign' : 'center'}),
-    html.Div(id="intro2", hidden=False, children=intro_text_2, style={'color': colors['text'],
-                                                                      'textAlign' : 'left', 'padding-left':'30px'}),
+    html.Div(dbc.Card(dbc.CardBody(html.Div(
+        id="intro2", hidden=False, children=intro_text_2, style={'color': colors['text'],
+        'textAlign' : 'left', 'padding-left':'30px'})), style=intro_card_style), id="intro-card"),
     
     # cards
     html.Div(dbc.Row([dbc.Col(html.Div(id='join-card')), dbc.Col(html.Div(id='sc-card')),
@@ -72,7 +84,7 @@ dash_app.layout = html.Div([
     # agile today stats
     html.Div(dash_table.DataTable(id='agile-stats-today', style_header=table_style_header,
                                   style_data=table_style_data, style_as_list_view=True),
-                                  hidden=True, id="stats-today-tab-div"),
+                                  hidden=True, id="stats-today-tab-div", style={'margin-top': '5px', 'margin-bottom': '5px'}),
     
     # date / direction / energy type
     html.Div(dbc.Row([                        
@@ -95,21 +107,21 @@ dash_app.layout = html.Div([
     html.Div(dcc.Graph(id='price-plot'), hidden=True, id="price-plot-div"),
     
     # best time calculator
-    html.Div(dbc.Row([dbc.Col(html.Div(children='Select a time period to find the cheapest import or \
+    html.Div(dbc.Card(dbc.CardBody([html.Div(html.Div(children='Select hours to find the cheapest import or \
                                        highest export period (import or export are selected at the top-right)',
-                                       style=title_style))]), hidden=True, id="price-calculator-title-div"),
-    html.Div(dbc.Row([dbc.Col(dcc.Dropdown([{'label': '0:30', 'value': 1}, {'label': '1:00', 'value': 2},
+                                       style=title_style), hidden=True, id="price-calculator-title-div"), dbc.Row([dbc.Col(dcc.Dropdown([{'label': '0:30', 'value': 1}, {'label': '1:00', 'value': 2},
                                             {'label': '1:30', 'value': 3}, {'label': '2:00', 'value': 4},
                                             {'label': '2:30', 'value': 5}, {'label': '3:00', 'value': 6},
                                             {'label': '3:30', 'value': 7}, {'label': '4:00', 'value': 8},
                                             {'label': '4:30', 'value': 9}, {'label': '5:00', 'value': 10},
                                             {'label': '5:30', 'value': 11}, {'label': '6:00', 'value': 12}, ],
-                                            '0:30', id='best-dropdown', placeholder="SELECT TIME PERIOD",
-                                            style=date_picker_style)),
+                                            '0:30', id='best-dropdown', placeholder="Select time period (H:M)",
+                                            style=period_style)),
                 dbc.Col(width=1),
                 dbc.Col(dash_table.DataTable(id='table-best', style_header=table_style_header,
-                                             style_data=table_style_data, style_cell=table_style_cell_cheapest)),
-                dbc.Col(width=1)]), hidden=True, id='price-calculator-div'),
+                                             style_data=table_style_data, style_cell=table_style_cell_cheapest,
+                                             style_cell_conditional=table_style_cell_conditional)),
+                dbc.Col(width=1)])]), style=calc_card_style), hidden=True, id='price-calculator-div'),
     
     # distribution
     html.Div(dcc.Graph(id='dist-plot'), hidden=True, id='dist-plot-div'),
@@ -134,4 +146,4 @@ app = dash_app.server
 
 # Run the app
 if __name__ == '__main__':
-    dash_app.run(host='0.0.0.0', port='8000')
+    dash_app.run(host='0.0.0.0', port='8000', debug=False)
