@@ -72,7 +72,6 @@ dash_app.layout = html.Div([
     ], style=tab_row_style, id="tabs"), hidden=True, id="tariff-tab-div",),
     
     # intro
-    html.H1("Smart Energy Dashboard", style={'color': colors['text'], 'textAlign' : 'center'}),
     html.H2(id="intro", hidden=False, children=intro_text, style={'color': colors['text'], 'textAlign' : 'center'}),
     html.Div(dbc.Card(dbc.CardBody(html.Div(
         id="intro2", hidden=False, children=intro_text_2, style={'color': colors['text'],
