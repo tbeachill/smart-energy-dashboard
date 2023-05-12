@@ -36,9 +36,7 @@ p_codes = {
 
 p_codes_r = dict(map(reversed, p_codes.items()))
 
-intro_text = [html.H1("Smart Energy Dashboard"),
-              html.H2("Select a region from the dropdown at the top to get started.", style={'color':'white'}),
-
+intro_text = [html.H2("Select a region from the dropdown at the top to get started.", style={'color':'white'}),
               ]
 
 intro_text_2 = [
