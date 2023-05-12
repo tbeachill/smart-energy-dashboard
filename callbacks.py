@@ -60,14 +60,14 @@ def get_callbacks(app):
 
     @app.callback(
         [Output("tariff-tab-div", "hidden"), Output("intro", "hidden"),
-         Output("intro2", "hidden")],
+         Output("intro2", "hidden"), Output("intro-card", "hidden")],
         Input("region-dropdown", "value")
     )
     def show_tabs(region):
         if not region:
             raise PreventUpdate
         
-        return [False, True, True]
+        return [False, True, True, True]
     
 
     @app.callback(

@@ -32,6 +32,21 @@ card_style = {
     'font-weight': 600,
 }
 
+intro_card_style = {
+    'background': '#6829ad',
+    'color':'white',
+    'text-align': 'left',
+    'font-size': '12px',
+    'font-weight': 600,
+    'margin':'50px'
+}
+
+calc_card_style = {
+    'background': '#6829ad',
+    'text-align': 'left',
+    'margin':'50px'
+}
+
 card_row_style = {
     'padding':'10px',
     'align-items': 'center',
@@ -95,6 +110,11 @@ date_picker_style = {
     "margin-top": "10px",
 }
 
+period_style = {
+    "margin-left": "50px",
+    "margin-top": "10px",
+}
+
 # TABLES
 table_style_data = {
     'backgroundColor': '#30123b',
@@ -143,13 +163,13 @@ period_table_style_data = {
 
 title_style = {
                 'textAlign': 'left',
-                'color': colors['text'],
+                'color': 'white',
                 'margin-left': '100px'
             }
 
 text_style = {
                 'textAlign': 'left',
-                'color': colors['text'],
+                'color': 'white',
                 'font-size': '11px',
                 'margin': '20px'
             }
