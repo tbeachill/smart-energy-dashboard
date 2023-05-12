@@ -1,4 +1,4 @@
-from dash import Input, Output
+from dash import Input, Output, dash
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from const import *
@@ -9,6 +9,33 @@ from style import *
 from stats_utils import stats_utils as s
 
 def get_callbacks(app):
+    @app.callback(
+            [Output("region-dropdown", "value"), Output("tabs", "value")],
+            Input("url", "pathname")
+    )
+    def display_page(pathname):
+        paths = pathname.split('/')[1:]
+
+        if len(paths) > 1:
+            return [paths[0], p_codes[paths[1]]]
+        else:
+            return [paths[0], dash.no_update]
+
+
+    @app.callback(
+        Output("url", "pathname"),
+        [Input("region-dropdown", "value"), Input("tabs", "value")]
+    )
+    def update_url(region, tariff):
+        if not region:
+            raise PreventUpdate
+        
+        if tariff == "tab-1":
+            return "/" + region
+        else:
+            return f"/{region}/{p_codes_r[tariff]}"
+    
+
     @app.callback(
         [Output("tariff-tab-div", "hidden"), Output("intro", "hidden"),
          Output("intro2", "hidden")],
@@ -54,6 +81,8 @@ def get_callbacks(app):
             return [F, F, T, F, T, start, end, F, T, T, T, T, T, F, F, ["Import", "Export"], "Import"]
         elif tab == 'C':
             return [F, T, T, F, T, start, end, F, T, T, T, T, T, F, T, ["Import", "Export"], "Import"]
+        elif tab == 'G':
+            return [F, F, T, F, T, start, end, F, T, T, T, T, T, F, T, ["Import", "Export"], "Import"]
         else:
             return [F, F, T, F, T, start, end, F, T, T, T, T, T, F, T, ["Import", "Export"], "Import"]
 

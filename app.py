@@ -38,6 +38,7 @@ get_callbacks(dash_app)
 
 # App layout
 dash_app.layout = html.Div([
+    dcc.Location(id="url", refresh=False),
     html.Div(children='Smart Energy Dashboard', style={
             'textAlign': 'center',
             'color': colors['text']
@@ -134,4 +135,4 @@ app = dash_app.server
 
 # Run the app
 if __name__ == '__main__':
-    dash_app.run(host='0.0.0.0', port='8000')
+    dash_app.run(host='0.0.0.0', port='8000', debug=True)

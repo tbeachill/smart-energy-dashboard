@@ -24,6 +24,18 @@ r_codes = [
     {"label": "North Scotland", "value": 'P'},
 ]
 
+# products
+p_codes = {
+    "Agile" : "A",
+    "Cosy" : "C",
+    "Flux" : "F",
+    "Go" : "G",
+    "Tracker" : "T",
+    "Intelligent" : "I"
+}
+
+p_codes_r = dict(map(reversed, p_codes.items()))
+
 intro_text = [html.H1("Smart Energy Dashboard"),
               html.H2("Select a region from the dropdown at the top to get started."),
               html.Br(),
