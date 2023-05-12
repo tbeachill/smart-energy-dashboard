@@ -7,7 +7,7 @@ from graph_utils import graph_utils as g
 from cards import cards
 from style import *
 from stats_utils import stats_utils as s
-from flask import Flask, request, send_from_directory
+from flask import request, send_from_directory
 
 def get_callbacks(app):
     @app.callback(
@@ -23,25 +23,10 @@ def get_callbacks(app):
             return [paths[0], dash.no_update]
         
 
-def get_callbacks(app):
     @app.server.route('/robots.txt')
     @app.server.route('/sitemap.xml')
     def static_from_root():
         return send_from_directory(app.server.static_folder, request.path[1:])
-    
-
-    @app.callback(
-            Output("download", "data"),
-            Input("url", "pathname")
-    )
-    def display_document(pathname):
-        paths = [x for x in pathname.split('/') if x]
-
-        if paths[0] == "robots.txt":
-            print(paths)
-            return dict(content="/robots.txt", filename="robots.txt")
-        else:
-            raise PreventUpdate
 
 
     @app.callback(

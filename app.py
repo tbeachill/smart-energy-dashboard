@@ -106,7 +106,6 @@ dash_app.layout = html.Div([
     html.Div(dcc.Graph(id='price-plot'), hidden=True, id="price-plot-div"),
     
     # best time calculator
-    
     html.Div(dbc.Card(dbc.CardBody([html.Div(html.Div(children='Select hours to find the cheapest import or \
                                        highest export period (import or export are selected at the top-right)',
                                        style=title_style), hidden=True, id="price-calculator-title-div"), dbc.Row([dbc.Col(dcc.Dropdown([{'label': '0:30', 'value': 1}, {'label': '1:00', 'value': 2},
@@ -115,7 +114,7 @@ dash_app.layout = html.Div([
                                             {'label': '3:30', 'value': 7}, {'label': '4:00', 'value': 8},
                                             {'label': '4:30', 'value': 9}, {'label': '5:00', 'value': 10},
                                             {'label': '5:30', 'value': 11}, {'label': '6:00', 'value': 12}, ],
-                                            '0:30', id='best-dropdown', placeholder="Select time period",
+                                            '0:30', id='best-dropdown', placeholder="Select time period (H:M)",
                                             style=period_style)),
                 dbc.Col(width=1),
                 dbc.Col(dash_table.DataTable(id='table-best', style_header=table_style_header,
