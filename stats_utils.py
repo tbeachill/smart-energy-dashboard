@@ -56,8 +56,8 @@ class stats_utils:
 
         end = df[i_:j_]['date'].max() + relativedelta(minutes=30)
 
-        df2 = pd.DataFrame([df[i_:j_]['date'].min().strftime('%d-%m-%Y %H:%M'), end.strftime('%d-%m-%Y %H:%M'),
+        df2 = pd.DataFrame([df[i_:j_]['date'].min().strftime('%d/%m %H:%M'), end.strftime('%d/%m %H:%M'),
                             round(average, 2)]).T
-        df2.columns = ['Start time', 'End time', 'Average unit rate (p/KWh)']
+        df2.columns = ['Start time', 'End time', 'Avg (p/KWh)']
         
         return df2.to_dict('records')

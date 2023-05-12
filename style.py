@@ -32,6 +32,16 @@ card_style = {
     'font-weight': 600,
 }
 
+join_card_style = {
+    'background': '#6829ad',
+    'color':'white',
+    'text-align': 'center',
+    'font-size': '12px',
+    'font-weight': 600,
+    'margin-left': '10px',
+    'margin-right': '10px'
+}
+
 intro_card_style = {
     'background': '#6829ad',
     'color':'white',
@@ -44,7 +54,7 @@ intro_card_style = {
 calc_card_style = {
     'background': '#6829ad',
     'text-align': 'left',
-    'margin':'50px'
+    'margin':'25px'
 }
 
 card_row_style = {
@@ -90,16 +100,16 @@ tab_row_style = {
 # RADIO BUTTONS
 radio_style = {
     'color':'white',
-    'font-size': '20px',
+    'font-size': '16px',
     'padding':'6px',
-    'padding-right':'100px',
+    'padding-right':'65px',
     'text-align': 'right',
 }
 
 radio_input_style = {
     "margin-right": "5px",
     "margin-left": "20px",
-    "margin-top": "35px",
+    "margin-top": "25px",
     'justify-content': 'right',
     'align-items': 'right',
 }
@@ -107,11 +117,11 @@ radio_input_style = {
 # DATE PICKER
 date_picker_style = {
     "margin-left": "100px",
-    "margin-top": "10px",
+    "margin-top": "20px",
 }
 
 period_style = {
-    "margin-left": "50px",
+    "margin-left": "0px",
     "margin-top": "10px",
     'color':'black',
 }
@@ -119,7 +129,8 @@ period_style = {
 # TABLES
 table_style_data = {
     'backgroundColor': '#30123b',
-    'color': 'white'
+    'color': 'white',
+    'font-size':'13px'
 }
 
 table_style_data_conditional = [
@@ -134,8 +145,9 @@ table_style_data_conditional = [
 ]
 
 table_style_cell = {
-    'padding-left':'25px',
-    'padding-right': '25px'
+    'padding-left':'10px',
+    'padding-right': '10px',
+    'font-size':'13px'
 }
 
 table_style_cell_conditional = [
@@ -156,7 +168,8 @@ table_style_cell_conditional = [
 table_style_header = {
     'backgroundColor': 'rgb(30, 30, 30)',
     'color': 'white',
-    'fontWeight': 'bold'
+    'fontWeight': 'bold',
+    'font-size':'13px'
 }
 
 table_style_header_conditional = [
@@ -167,13 +180,13 @@ period_table_style_data = {
     'backgroundColor': '#30123b',
     'color': 'white',
     'margin-right' : '30px',
-    'padding-right': '20px'
+    'padding-right': '20px',
 }
 
 title_style = {
                 'textAlign': 'left',
                 'color': 'white',
-                'margin-left': '100px'
+                'margin-left': '0px'
             }
 
 text_style = {
@@ -195,7 +208,8 @@ dropdown_style_ = {
 }
 
 table_style_cell_cheapest = {
-    'padding-left':'25px',
-    'padding-right':'25px',
-    'margin-right': '250px'
+    'padding-left':'10px',
+    'padding-right':'10px',
+    'margin-right': '250px',
+    'font-size':'12px'
 }

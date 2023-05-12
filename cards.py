@@ -11,8 +11,8 @@ class cards:
         card = dbc.Card(
             dbc.CardBody(
                 [
-                    html.H4("Standing Charge", className="card-title"),
-                    html.H2(str(sql.query(f"SELECT cost FROM StandingCharges WHERE tariff = '{tariff}' AND \
+                    html.H6("Standing Charge", className="card-title"),
+                    html.H5(str(sql.query(f"SELECT cost FROM StandingCharges WHERE tariff = '{tariff}' AND \
                                           region_code = '{region}' AND type = '{energy_type[0]}'")['cost'][0]) + "p",
                                           className="card-subtitle"),
                 ]
@@ -31,8 +31,8 @@ class cards:
         card = dbc.Card(
             dbc.CardBody(
                 [
-                    html.H4("Current Import", className="card-title"),
-                    html.H2(str(sql.query(f"SELECT unit_rate FROM {table} WHERE tariff = '{tariff}' AND \
+                    html.H6("Current Import", className="card-title"),
+                    html.H5(str(sql.query(f"SELECT unit_rate FROM {table} WHERE tariff = '{tariff}' AND \
                                           region_code = '{region}' AND date = '{dt.get_period(tariff)}'")['unit_rate'][0]) +
                                           "p", className="card-subtitle"),
                 ]
@@ -58,8 +58,8 @@ class cards:
         card = dbc.Card(
             dbc.CardBody(
                 [
-                    html.H4(title, className="card-title"),
-                    html.H2(contents, className="card-subtitle"),
+                    html.H6(title, className="card-title"),
+                    html.H5(contents, className="card-subtitle"),
                 ]
             ),
             style=card_style
@@ -72,13 +72,13 @@ class cards:
             [
                 dbc.CardBody(
                     [
-                        html.H4("Join Octopus", className="card-title"),
-                        html.H5("Get £50 credit"),
+                        html.H6("Join Octopus", className="card-title"),
+                        html.H6("Get £50 credit"),
                         html.P(
                             "Join Octopus with the code light-beach-323 or click the button "
                             "for £50 account credit.",
-                        style={'font-size':'15px'}),                        
-                        dbc.Button("Join Now", color="primary", href="https://share.octopus.energy/light-beach-323"),
+                        style={'font-size':'13px'}),                        
+                        dbc.Button("Join Now", color="primary", href="https://share.octopus.energy/light-beach-323", style={'font-size':'13px'}),
                     ]
                 ),
             ],

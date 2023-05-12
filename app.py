@@ -20,7 +20,7 @@ dash_app.index_string = '''
         <meta name="keywords" content="octopus energy, smart energy, octopus agile prices, octopus tracker prices, smart tariff, agile octopus, octopus tracker, octopus energy referral code, octopus go, smart meter, intelligent octopus, octopus flux, cosy octopus, referral link, save money, switch, octopus energy prices, octopus energy rates, octopus energy tariffs, electricity, gas" />
         <link rel="canonical" href="https://smartenergydashboard.co.uk"/>
         <title>Smart Energy Dashboard - Save Money With Smart Tariffs</title>
-        <meta http-equiv='content-language' content='en-gb'>
+        <meta http-equiv='content-language' content='en-gb'> 
         {%favicon%}
         {%css%}
     </head>
@@ -78,9 +78,10 @@ dash_app.layout = html.Div([
         'textAlign' : 'left', 'padding-left':'30px'})), style=intro_card_style), id="intro-card"),
     
     # cards
-    html.Div(dbc.Row([dbc.Col(html.Div(id='join-card')), dbc.Col(html.Div(id='sc-card')),
+    html.Div([dbc.Row([dbc.Col(html.Div(id='join-card'))], style=card_row_style),
+             dbc.Row([dbc.Col(html.Div(id='sc-card')),
                       dbc.Col(html.Div(id='card-1')), dbc.Col(html.Div(id='card-2', hidden=True))],
-                      style=card_row_style), hidden=True, id="card-row-div"),
+                      style=card_row_style)], hidden=True, id="card-row-div"),
     
     # agile today stats
     html.Div(dash_table.DataTable(id='agile-stats-today', style_header=table_style_header,
@@ -147,4 +148,4 @@ app = dash_app.server
 
 # Run the app
 if __name__ == '__main__':
-    dash_app.run(host='0.0.0.0', port='8000', debug=False)
+    dash_app.run(host='0.0.0.0', port='8000', debug=True)

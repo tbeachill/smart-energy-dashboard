@@ -1,4 +1,13 @@
 body{
     background-color: #1a0933;
     color: white;
+    
+
 }
+
+.DateInput_input {
+    background-color: var(--bs-body-bg);
+    font-family: var(--bs-body-font-family);
+    font-size: 16px;
+    'vertical-align': 'baseline';
+  }
