@@ -23,6 +23,15 @@ dash_app.index_string = '''
         {%favicon%}
         {%css%}
     </head>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-T2N3JJ6FLT"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-T2N3JJ6FLT');
+    </script>
     <body>
         {%app_entry%}
         <footer>
