@@ -17,9 +17,10 @@ dash_app.index_string = '''
     <head>
         {%metas%}
         <meta name="description" content="Find out the latest Octopus Energy prices and compare their smart tariffs. Save money by switching to a smart tariff like Agile, Tracker, or Go. View daily tracker prices and half-hourly Octopus Agile rates." />
-        <meta name="keywords" content="octopus energy, smart energy, smart meter, smart tariff, agile octopus, octopus go, intelligent octopus, octopus flux, octopus tracker, cosy octopus, referral link, octopus referral code, save money, switch, octopus energy prices, octopus energy rates, octopus energy tariffs, electricity, gas" />
+        <meta name="keywords" content="octopus energy, smart energy, octopus agile prices, octopus tracker prices, smart tariff, agile octopus, octopus tracker, octopus energy referral code, octopus go, smart meter, intelligent octopus, octopus flux, cosy octopus, referral link, save money, switch, octopus energy prices, octopus energy rates, octopus energy tariffs, electricity, gas" />
         <link rel="canonical" href="https://smartenergydashboard.co.uk"/>
         <title>Smart Energy Dashboard - Save Money With Smart Tariffs</title>
+        <meta http-equiv='content-language' content='en-gb'>
         {%favicon%}
         {%css%}
     </head>
@@ -71,6 +72,7 @@ dash_app.layout = html.Div([
     ], style=tab_row_style, id="tabs"), hidden=True, id="tariff-tab-div",),
     
     # intro
+    html.H1("Smart Energy Dashboard", style={'color': colors['text'], 'textAlign' : 'center'}),
     html.H2(id="intro", hidden=False, children=intro_text, style={'color': colors['text'], 'textAlign' : 'center'}),
     html.Div(dbc.Card(dbc.CardBody(html.Div(
         id="intro2", hidden=False, children=intro_text_2, style={'color': colors['text'],
