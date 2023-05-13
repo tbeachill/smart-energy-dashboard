@@ -18,7 +18,6 @@ dash_app.index_string = '''
         {%metas%}
         <meta name="description" content="Find out the latest Octopus Energy prices and compare their smart tariffs. Save money by switching to a smart tariff like Agile, Tracker, or Go. View daily tracker prices and half-hourly Octopus Agile rates." />
         <meta name="keywords" content="octopus energy, smart energy, octopus agile prices, octopus tracker prices, smart tariff, agile octopus, octopus tracker, octopus energy referral code, octopus go, smart meter, intelligent octopus, octopus flux, cosy octopus, referral link, save money, switch, octopus energy prices, octopus energy rates, octopus energy tariffs, electricity, gas" />
-        <link rel="canonical" href="https://smartenergydashboard.co.uk"/>
         <title>Smart Energy Dashboard - Save Money With Smart Tariffs</title>
         <meta http-equiv='content-language' content='en-gb'> 
         {%favicon%}
