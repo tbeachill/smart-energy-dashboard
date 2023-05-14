@@ -33,6 +33,7 @@ dash_app.index_string = '''
     gtag('config', 'G-T2N3JJ6FLT');
     </script>
     <body>
+        <h1 style="color:#32fbe2;text-align:center;font-size:100%;", id='page_title'>Smart Energy Dashboard - Smart Tariff Prices of Octopus Energy</h1>
         {%app_entry%}
         <footer>
             {%config%}
@@ -48,10 +49,6 @@ get_callbacks(dash_app)
 # App layout
 dash_app.layout = html.Div([
     dcc.Location(id="url", refresh=False),
-    html.Div(children='Smart Energy Dashboard', style={
-            'textAlign': 'center',
-            'color': colors['text']
-        }),
     dcc.Dropdown(
         r_codes,
         id='region-dropdown',
@@ -59,7 +56,8 @@ dash_app.layout = html.Div([
         searchable=False,
         style=dropdown_style_
     ),
-    
+    html.Div(id='blank-output'),
+    dcc.Store(id="store", data=p_codes_r),    
     # tabs
     html.Div(dcc.Tabs([
         dcc.Tab(label='Agile', style=tab_style, selected_style=selected_tab_style, value='A', id='A'),

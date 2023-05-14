@@ -1,4 +1,4 @@
-from dash import Input, Output, dash
+from dash import Input, Output, State, dash
 from datetime import date
 from dateutil.relativedelta import relativedelta
 from const import *
@@ -24,6 +24,35 @@ def get_callbacks(app):
         else:
             return [dash.no_update, dash.no_update]
         
+
+    app.clientside_callback(
+        """
+        function(tariff, p_codes_r) {
+            if (tariff != "tab-1")  {
+                if (['A', 'C', 'I'].includes(tariff)) {
+                    document.title = `Smart Energy Dashboard - ${p_codes_r[tariff]} Octopus  Prices`;
+                    document.getElementById("page_title").innerHTML = `Smart Energy Dashboard - Octopus ${p_codes_r[tariff]} Prices`;
+                } else {
+                    document.title = `Smart Energy Dashboard - Octopus ${p_codes_r[tariff]} Prices`;
+                    document.getElementById("page_title").innerHTML = `Smart Energy Dashboard - Octopus ${p_codes_r[tariff]} Prices`;
+                }
+                document.querySelector('meta[name="description"]').setAttribute("content",
+                        `Find out the latest Octopus Energy ${p_codes_r[tariff]} prices and compare their other
+                        smart tariffs. View daily ${p_codes_r[tariff]} rates and how they change over time.`);
+
+                document.querySelector('meta[name="keywords"]').setAttribute("content",
+                        `octopus energy, octopus ${p_codes_r[tariff].toLowerCase()} prices,
+                        ${p_codes_r[tariff].toLowerCase()} octopus, octopus ${p_codes_r[tariff].toLowerCase()},
+                        referral code, octopus energy referral code, referral link, octopus energy prices,
+                        octopus energy rates, octopus energy tariffs, electricity, gas`);
+            }
+        }
+        """,
+        Output('blank-output', 'children'),
+        Input('tabs', 'value'),
+        State('store', 'data')
+    )
+    
 
     @app.server.route('/robots.txt')
     @app.server.route('/sitemap.xml')
