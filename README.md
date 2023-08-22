@@ -1,4 +1,9 @@
 # Smart Energy Dashboard
+![Python](https://img.shields.io/badge/-Python-3572A5?logo=python&logoColor=white&style=flat-square)
+![Plotly](https://img.shields.io/badge/-Plotly-20293d?logo=plotly&logoColor=white&style=flat-square)
+![Plotly Dash](https://img.shields.io/badge/-Plotly%20Dash-3F4F75?logo=plotly&logoColor=white&style=flat-square)
+![Pandas](https://img.shields.io/badge/-Pandas-150458?logo=pandas&logoColor=white&style=flat-square)
+
 Created with Plotly Dash, this is a dashboard for viewing the prices of Octopus Energy's smart tariffs.
 
 ### Hosted Website
