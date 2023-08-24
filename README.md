@@ -6,9 +6,6 @@
 
 Created with Plotly Dash, this is a dashboard for viewing the prices of Octopus Energy's smart tariffs.
 
-### Hosted Website
-https://smartenergydashboard.co.uk
-
 ### Features
  - Information for the following tariffs:
    - Agile
