@@ -31,3 +31,6 @@ https://smartenergydashboard.co.uk
 ### Technology
  - The site gets it's data from a SQL database hosted on Microsoft Azure
  - The database is updated daily through a Python script that pulls the latest prices from the Octopus Energy API, transforms the data, and stores it.
+
+### Screenshot
+![Screenshot](assets/screenshot.png)
